@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-公网游戏服务已停用并取消开机启动，GitHub 的 `ONLINE_GAME_URL` 已移除。原服务器的 HTTP 和 HTTPS 首页均恢复为协作平台。不得重新用已有项目的根地址部署游戏。以下为将来拥有独立游戏地址时的部署参考，并不表示当前服务仍在运行。
+公网联机使用 `https://120.77.201.3/tongci/`，原服务器的 HTTP 和 HTTPS 首页仍为协作平台。游戏通过一个只匹配 `/tongci/` 的 Nginx location 转发到回环 Node 服务，不能重新用原项目根地址承载游戏。独立端口 8443 的入口曾在公网连接超时，当前使用已开放的 HTTPS 443 端口下的专用路径。
 
 原站 HTTPS 仍使用已签发的 IP 证书，续签定时器继续运行；证书及续签工具位于 `/opt/tong-ci-xiang-yu/ops/`，不能当作停用游戏的临时文件删除。
 
@@ -14,7 +14,8 @@
 - 独立用户 `tongci`，应用目录 `/opt/tong-ci-xiang-yu/`。
 - `releases/<commit>/` 存放每次发布，`current` 符号链接指向启用版本。
 - systemd 单实例服务 `tong-ci-xiang-yu.service`，仅监听 `127.0.0.1:41731`。
-- 使用独立游戏域名和明确匹配该域名的 Nginx 配置，同时验证原站 HTTP 和 HTTPS 首页、静态资源与接口未被改变。
+- 当前使用 `nginx-tongci-path.conf`，放在原站已有 include 的扩展目录，保留原站主配置。该配置只处理 `/tongci` 和 `/tongci/`，HTTP 游戏路径跳转 HTTPS，原站 `/`、`/assets/`、`/api/` 保持原路由。
+- Node 通过 `PUBLIC_URL` 取得路由前缀，房间 Cookie 限定 `Path=/tongci/`；子目录服务不设置影响整个主机的 HSTS。
 - `backups/` 在服务器保留首次发布前的 Nginx 配置。
 
 服务环境文件 `/etc/tong-ci-xiang-yu.env`：
@@ -23,7 +24,7 @@
 HOST=127.0.0.1
 PORT=41731
 TRUST_PROXY=loopback
-PUBLIC_URL=https://你的公网域名或已签发证书的IP地址
+PUBLIC_URL=https://120.77.201.3/tongci/
 ```
 
 可以参考本目录的 systemd 和 Nginx 配置。不要把证书私钥、SSH 私钥或实际环境文件提交到仓库。新建虚拟主机前检查冲突，执行 `nginx -t` 成功后再 reload。
@@ -34,7 +35,7 @@ PUBLIC_URL=https://你的公网域名或已签发证书的IP地址
 
 ```sh
 systemctl status tong-ci-xiang-yu
-curl --fail https://你的公网地址/api/info
+curl --fail https://120.77.201.3/tongci/api/info
 journalctl -u tong-ci-xiang-yu --since '30 minutes ago'
 ```
 

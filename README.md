@@ -3,9 +3,10 @@
 两个脑洞，一场奇妙相遇。支持**离线同屏**和**邀请码联机**的双人联想游戏。
 
 - [在线游玩（同屏版）](https://we26789.github.io/tong-ci-xiang-yu/)
+- [好友公网联机](https://120.77.201.3/tongci/)
 - [GitHub 源码](https://github.com/we26789/tong-ci-xiang-yu)
 
-公网联机现已撤下。原服务器首页已恢复为原来的协作平台，不能将该首页作为游戏入口。本地和局域网联机功能仍可使用。
+游戏使用独立路径 `/tongci/`，服务器首页仍为原来的协作平台。本地和局域网联机功能也可使用。
 
 ## 开始游玩
 
@@ -46,7 +47,7 @@ node server.cjs
 
 ### GitHub 与公网联机
 
-完整源码托管在 GitHub。推送 `main` 后，GitHub Actions 先执行游戏逻辑、房间隐私、HTTP 和静态构建测试，再发布 GitHub Pages 同屏版。当前未配置独立的公网联机地址，网页禁用公网邀请入口，不会跳转到其他项目，也不会向 Pages 请求不存在的房间接口。
+完整源码托管在 GitHub。推送 `main` 后，GitHub Actions 先执行游戏逻辑、房间隐私、HTTP 和静态构建测试，再发布 GitHub Pages 同屏版。Pages 的邀请按钮可进入游戏专用路径 `/tongci/`，不会占用原项目首页或向 Pages 请求房间接口。
 
 **GitHub Pages 只提供静态页面，不能运行 Node 房间服务。** 联机版将 `server.cjs` 和前端一起部署到支持 Node 的 HTTPS 服务，前端与接口保持同源。公网服务使用 `PUBLIC_URL`：
 
@@ -55,11 +56,11 @@ $env:PUBLIC_URL = 'https://你的实际游戏域名'
 node server.cjs
 ```
 
-`PUBLIC_URL` 必须是根路径地址，不含账号、查询参数或片段；公网地址须为 HTTPS。它只控制分享地址与安全 Cookie 配置，设置此变量不会自动部署网站或生成域名。前端与接口保持同源；不需要配置第三方中转或把密钥写入网页。
+`PUBLIC_URL` 支持根地址或以 `/` 结尾的专用目录地址，例如 `https://120.77.201.3/tongci/`，不含账号、查询参数或片段；公网地址须为 HTTPS。它控制路由前缀、分享地址与 Cookie 路径，设置此变量不会自动部署网站或生成域名。前端与接口保持同源；不需要配置第三方中转或把密钥写入网页。
 
 当前服务采用单进程内存房间；部署时应保持单实例，或先接入共享状态与分布式限速后再扩容。
 
-GitHub 仓库变量 `ONLINE_GAME_URL` 控制 Pages 的联机入口，目前已移除。只有为游戏配置独立地址并验证后才应设置；不能使用已有项目的首页。修改后在 Actions 手动运行发布工作流即可生效。它应当是 HTTPS 根地址，不含账号、路径、参数或片段。构建只发布 `_site/index.html` 和 `.nojekyll`，服务端文件、本机记录、备份和环境配置不会进入静态网站。
+GitHub 仓库变量 `ONLINE_GAME_URL` 控制 Pages 的联机入口，当前使用 `https://120.77.201.3/tongci/`。不能将已有项目的首页作为游戏入口。修改后在 Actions 手动运行发布工作流即可生效。它应当是 HTTPS 根地址或以 `/` 结尾的目录地址，不含账号、参数或片段。构建只发布 `_site/index.html` 和 `.nojekyll`，服务端文件、本机记录、备份和环境配置不会进入静态网站。
 
 服务器部署和回退说明见 [deploy/README.md](deploy/README.md)。
 
@@ -125,7 +126,7 @@ npm run test:online
 公网检查需要指定真实部署地址：
 
 ```powershell
-$env:PUBLIC_GAME_URL = 'https://已验证的独立游戏域名/'
+$env:PUBLIC_GAME_URL = 'https://120.77.201.3/tongci/'
 $env:PUBLIC_PAGES_URL = 'https://we26789.github.io/tong-ci-xiang-yu/'
 npm run test:public
 ```

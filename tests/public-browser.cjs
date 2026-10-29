@@ -5,6 +5,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const gameUrl=process.env.PUBLIC_GAME_URL,pagesUrl=process.env.PUBLIC_PAGES_URL;
 if(!gameUrl||!pagesUrl)throw new Error('Set PUBLIC_GAME_URL and PUBLIC_PAGES_URL to the deployed HTTPS sites');
 for(const url of [gameUrl,pagesUrl])assert.equal(new URL(url).protocol,'https:');
+const apiUrl=route=>new URL(route.replace(/^\//,''),gameUrl).href;
 const output=path.join(__dirname,'..','artifacts');fs.mkdirSync(output,{recursive:true});
 const results=[],errors=[];let browser,host,code;
 async function check(name,run){await run();results.push({name,passed:true});console.log('PASS '+name);}
@@ -13,7 +14,7 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
 (async()=>{
   browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge',headless:true});
   const a=await browser.newContext({viewport:{width:1440,height:1050}}),b=await browser.newContext({viewport:{width:390,height:844}});
-  const serviceResponse=await a.request.get(new URL('/api/info',gameUrl).href);
+  const serviceResponse=await a.request.get(apiUrl('/api/info'));
   assert.equal(serviceResponse.status(),200,'Verify the separate game service before any public writes');
   const serviceInfo=await serviceResponse.json();
   assert.equal(serviceInfo.online,true,'The target must identify itself as the game room service');
@@ -31,7 +32,7 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
   });
   await check('Pages offers an explicit working HTTPS online entry',async()=>{
     await pages.locator('#inviteBtn').click();await pages.locator('#modalActions').getByRole('button',{name:'进入联机版',exact:true}).click();
-    await pages.waitForURL(new URL(gameUrl).origin+'/**');
+    await pages.waitForURL(gameUrl+'**');
     await until(pages,()=>document.querySelector('#connectionHint').textContent.includes('支持好友联机'));
   });
   await check('Public invitation joins two independent sessions with secure private seats',async()=>{
@@ -40,13 +41,13 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
     await until(host,()=>document.querySelector('#connectionHint').textContent.includes('支持好友联机'));
     await host.locator('#createRoomBtn').click();await host.locator('#inviteDialogLink').waitFor();
     code=await host.locator('#roomCode').innerText();const link=await host.locator('#inviteDialogLink').inputValue();
-    assert.equal(new URL(link).origin,new URL(gameUrl).origin);assert.equal(new URL(link).protocol,'https:');
+    assert.equal(new URL(link).origin,new URL(gameUrl).origin);assert.equal(new URL(link).protocol,'https:');assert.equal(new URL(link).pathname,new URL(gameUrl).pathname);
     await host.locator('#closeModal').click();await guest.goto(link);await guest.locator('#confirmJoinBtn').click();
     await until(guest,()=>!document.querySelector('#inB').disabled);await until(host,()=>!document.querySelector('#inA').disabled);
-    const cookie=(await a.cookies()).find(item=>item.name==='tcxy_session');assert.ok(cookie.secure&&cookie.httpOnly);assert.equal(cookie.sameSite,'Strict');
+    const cookie=(await a.cookies()).find(item=>item.name==='tcxy_session');assert.ok(cookie.secure&&cookie.httpOnly);assert.equal(cookie.sameSite,'Strict');assert.equal(cookie.path,new URL(gameUrl).pathname);
     await host.locator('#inA').fill('公网星雾');await host.locator('#lockA').click();
     await until(guest,()=>document.querySelector('#statusA').textContent.includes('已锁定'));
-    const state=await b.request.get(new URL(gameUrl).origin+'/api/rooms/'+code);assert.equal(state.status(),200);assert.ok(!(await state.text()).includes('公网星雾'));
+    const state=await b.request.get(apiUrl('/api/rooms/'+code));assert.equal(state.status(),200);assert.ok(!(await state.text()).includes('公网星雾'));
   });
   await check('Public refresh restores the seat and both browsers reveal the same win',async()=>{
     await host.reload();await until(host,()=>document.querySelector('#roomDetails').hidden===false);
@@ -65,6 +66,6 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
   fs.writeFileSync(path.join(output,'public-browser-report.json'),JSON.stringify({gameUrl,pagesUrl,results,errors},null,2));
   console.log(JSON.stringify({passed:results.length,errors}));
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{
-  if(host&&code)try{await host.evaluate(async code=>{await fetch('/api/rooms/'+code+'/actions',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({type:'leave'})});},code);}catch(_){}
+  if(host&&code)try{await host.evaluate(async input=>{await fetch(input.url,{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({type:'leave'})});},{url:apiUrl('/api/rooms/'+code+'/actions')});}catch(_){}
   if(browser)await browser.close();
 });

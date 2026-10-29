@@ -20,9 +20,10 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   let published = null;
   if (publicUrl) {
     published = new URL(publicUrl);
-    if (!['http:','https:'].includes(published.protocol)||published.username||published.password||published.search||published.hash||published.pathname!=='/') throw new Error('PUBLIC_URL must be a root HTTP(S) URL without credentials, query or fragment');
+    if (!['http:','https:'].includes(published.protocol)||published.username||published.password||published.search||published.hash||!/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(published.pathname)) throw new Error('PUBLIC_URL must be an HTTP(S) directory URL without credentials, query or fragment');
     if (published.protocol!=='https:'&&!localHostname(published.hostname)) throw new Error('Use HTTPS for a public PUBLIC_URL');
   }
+  const basePath=published?.pathname||'/';
   const intents=new Map(), rates=new Map();
   const allowedHosts=new Set(['127.0.0.1','localhost','[::1]',os.hostname().toLowerCase()]);
   if(published)allowedHosts.add(published.hostname.toLowerCase());
@@ -36,13 +37,13 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
     return peer;
   }
   const cookieToken=req=>{const match=(req.headers.cookie||'').match(/(?:^|;\s*)tcxy_session=([a-zA-Z0-9_-]{43})(?:;|$)/);return match?match[1]:'';};
-  const cookie=value=>'tcxy_session='+value+'; Path=/; HttpOnly; SameSite=Strict; Max-Age='+(value?'7200':'0')+(published?.protocol==='https:'?'; Secure':'');
+  const cookie=value=>'tcxy_session='+value+'; Path='+basePath+'; HttpOnly; SameSite=Strict; Max-Age='+(value?'7200':'0')+(published?.protocol==='https:'?'; Secure':'');
   function security(res,scriptHashes='') {
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('X-Frame-Options','DENY');
     res.setHeader('Referrer-Policy','no-referrer');res.setHeader('Cache-Control','no-store');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' "+scriptHashes+"; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
-    if(published?.protocol==='https:')res.setHeader('Strict-Transport-Security','max-age=15552000');
+    if(published?.protocol==='https:'&&basePath==='/')res.setHeader('Strict-Transport-Security','max-age=15552000');
   }
   function json(res,status,body) { if(res.destroyed||res.writableEnded)return;res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(body)); }
   function requestUrl(req) {
@@ -53,7 +54,7 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   function sharing(req) {
     const url=requestUrl(req),port=server.address().port;
     const addresses=getNetworkAddresses();
-    let base=published?.origin;
+    let base=published?published.origin+basePath.replace(/\/$/,''):null;
     if(!base)base=['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&addresses.length?'http://'+addresses[0].address+':'+port:url.origin;
     const host=new URL(base).hostname;
     return {baseUrl:base,shareScope:['localhost','127.0.0.1','[::1]'].includes(host)?'local':localHostname(host)?'lan':'public'};
@@ -103,9 +104,11 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   const server=http.createServer({maxHeaderSize:8192,requestTimeout:10000,headersTimeout:10000},async(req,res)=>{
     security(res);
     try{
-      const url=requestUrl(req),route=url.pathname,token=cookieToken(req);
+      const url=requestUrl(req),token=cookieToken(req);
+      if(!url.pathname.startsWith(basePath))throw new RoomError('NOT_FOUND','没有这个页面或接口。',404);
+      const route=url.pathname.slice(basePath.length-1);
       if(req.method==='GET'&&(route==='/'||route==='/index.html')){
-        const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
+        const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8').replace('<head>','<head>\n<meta name="tcxy-base-path" content="'+basePath+'">');
         const hashes=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match=>"'sha256-"+crypto.createHash('sha256').update(match[1]).digest('base64')+"'").join(' ');
         security(res,hashes);res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(html);return;
       }

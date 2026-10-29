@@ -2684,6 +2684,8 @@ body::before {
   // The room service owns online rounds; the original core still runs offline.
   function roomRequest(path, options) {
     options = options || {};
+    var baseMeta=document.querySelector('meta[name="tcxy-base-path"]');
+    path=(baseMeta?baseMeta.content:'/').replace(/\/$/,'')+path;
     var method = options.body === undefined ? 'GET' : 'POST';
     var key = options.key || (window.crypto && crypto.randomUUID ? crypto.randomUUID() : 'intent-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
     async function attempt(retry) {

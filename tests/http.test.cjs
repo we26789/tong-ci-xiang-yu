@@ -4,6 +4,26 @@ const crypto = require('node:crypto');
 const {createApp} = require('../server.cjs');
 const http = require('node:http');
 
+test('a shared-host subdirectory isolates game routes, cookies and invitation links',async t=>{
+  const app=createApp({publicUrl:'https://game.example/tongci/'});
+  await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));t.after(()=>app.close());
+  const base='http://127.0.0.1:'+app.server.address().port;
+  for(const route of ['/','/api/info','/tongci-other/api/info'])assert.equal((await fetch(base+route)).status,404);
+  const page=await fetch(base+'/tongci/');assert.equal(page.status,200);
+  assert.match(await page.text(),/<meta name="tcxy-base-path" content="\/tongci\/">/);
+  assert.equal(page.headers.get('strict-transport-security'),null,'A subdirectory must not change the whole host HSTS policy');
+  const info=await (await fetch(base+'/tongci/api/info')).json();assert.equal(info.baseUrl,'https://game.example/tongci');
+  const created=await fetch(base+'/tongci/api/rooms',{method:'POST',headers:{Origin:'https://game.example','Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:'{"mode":"classic","theme":"free"}'});
+  assert.equal(created.status,201);assert.match(created.headers.get('set-cookie'),/Path=\/tongci\//);
+  const cookie=created.headers.get('set-cookie').split(';')[0],room=(await created.json()).room;
+  assert.equal(new URL(room.shareUrl).pathname,'/tongci/');assert.equal(new URL(room.shareUrl).searchParams.get('room'),room.code);
+  const restored=await (await fetch(base+'/tongci/api/session',{headers:{Cookie:cookie}})).json();assert.equal(restored.room.code,room.code);
+  const guest=await fetch(base+'/tongci/api/rooms/'+room.code+'/members',{method:'POST',headers:{Origin:'https://game.example','Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:'{}'});
+  assert.equal(guest.status,201);assert.equal((await guest.json()).room.seat,1);
+  const left=await fetch(base+'/tongci/api/rooms/'+room.code+'/actions',{method:'POST',headers:{Origin:'https://game.example',Cookie:cookie,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:'{"type":"leave"}'});
+  assert.equal(left.status,200);assert.match(left.headers.get('set-cookie'),/Path=\/tongci\/;.*Max-Age=0/);
+});
+
 test('forwarded client identity is trusted only when loopback proxy support is enabled',async t=>{
   for(const trustProxy of ['', 'loopback']){
     const app=createApp({trustProxy});await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));t.after(()=>app.close());

@@ -5,8 +5,9 @@ function buildPages({output=path.join(__dirname,'..','_site'),onlineUrl=process.
   let metadata='<meta name="tcxy-hosting" content="pages">';
   if(onlineUrl){
     const url=new URL(onlineUrl);
-    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||url.pathname!=='/')throw new Error('ONLINE_GAME_URL must be a root HTTPS URL');
-    metadata+='\n<meta name="tcxy-online-url" content="'+url.origin.replaceAll('&','&amp;').replaceAll('"','&quot;')+'">';
+    if(url.protocol!=='https:'||url.username||url.password||url.search||url.hash||!/^\/(?:[A-Za-z0-9_-]+\/)*$/.test(url.pathname))throw new Error('ONLINE_GAME_URL must be an HTTPS directory URL');
+    const destination=url.origin+(url.pathname==='/'?'':url.pathname);
+    metadata+='\n<meta name="tcxy-online-url" content="'+destination.replaceAll('&','&amp;').replaceAll('"','&quot;')+'">';
   }
   const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
   fs.mkdirSync(output,{recursive:true});

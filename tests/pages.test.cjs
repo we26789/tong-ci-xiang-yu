@@ -13,6 +13,8 @@ test('Pages publishes only the game and an explicit HTTPS online entry',()=>{
     const html=fs.readFileSync(path.join(output,'index.html'),'utf8');
     assert.match(html,/<meta name="tcxy-hosting" content="pages">/);
     assert.match(html,/<meta name="tcxy-online-url" content="https:\/\/game.example.com">/);
+    buildPages({output,onlineUrl:'https://game.example.com/tongci/'});
+    assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/<meta name="tcxy-online-url" content="https:\/\/game.example.com\/tongci\/">/);
     buildPages({output,onlineUrl:''});
     assert.doesNotMatch(fs.readFileSync(path.join(output,'index.html'),'utf8'),/name="tcxy-online-url" content=/);
     for(const onlineUrl of ['http://game.example.com','https://user:pass@game.example.com','https://game.example.com/path','https://game.example.com/?x=y','javascript:alert(1)']){
