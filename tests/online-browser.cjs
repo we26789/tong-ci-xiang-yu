@@ -24,6 +24,9 @@ async function shot(page,name){await page.waitForTimeout(800);await page.screens
     await host.goto(base);await until(host,()=>document.querySelector('#connectionHint').textContent.includes('局域网'));
     await host.locator('#createRoomBtn').click();await host.locator('#inviteDialogLink').waitFor();
     await host.locator('#closeModal').click();
+    assert.equal(await host.locator('#waitingRoom').isVisible(),true);
+    assert.equal(await host.locator('#arena').isVisible(),false);
+    assert.equal(await host.locator('#landingView').isVisible(),false);
     assert.match(await host.locator('#roomCode').innerText(),/^[A-HJ-NP-Z2-9]{6}$/);
     assert.equal(await host.locator('#inA').isDisabled(),true);
     const link=await host.locator('#roomLink').inputValue();assert.ok(!link.includes('127.0.0.1'));assert.match(link,/room=/);
@@ -44,6 +47,9 @@ async function shot(page,name){await page.waitForTimeout(800);await page.screens
     assert.equal(await guest.locator('#inB').isDisabled(),false);
     assert.equal(await guest.locator('#inA').isDisabled(),true);
     assert.equal(await guest.locator('#modal').evaluate(node=>node.open),false);
+    assert.equal(await host.locator('#waitingRoom').isVisible(),false);
+    assert.equal(await host.locator('#arena').isVisible(),true);
+    assert.equal(await guest.locator('.sidebar').isVisible(),false);
   });
   await check('Copies actual invitation code and link; full rooms reject a third player',async()=>{
     await host.locator('#copyCodeBtn').click();assert.equal(await host.evaluate(()=>navigator.clipboard.readText()),code);
@@ -106,6 +112,8 @@ async function shot(page,name){await page.waitForTimeout(800);await page.screens
     await host.locator('#leaveRoomBtn').click();await host.getByRole('button',{name:'退出房间',exact:true}).click();
     await until(host,()=>document.querySelector('#roomLobby').hidden===false);
     await until(guest,()=>document.querySelector('#roomLobby').hidden===false);
+    assert.equal(await host.locator('#landingView').isVisible(),true);
+    assert.equal(await guest.locator('#landingView').isVisible(),true);
     await third.reload();await third.locator('#confirmJoinBtn').click();
     await until(third,()=>document.querySelector('#joinError').textContent.includes('结束'));
   });

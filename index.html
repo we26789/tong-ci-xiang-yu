@@ -2257,8 +2257,217 @@ body::before {
 @media(max-width:359px){.invite-top{font-size:8px;padding:6px}.top-tools{gap:4px}.brand-mark{width:24px}.brand-name{font-size:16px}.brand{gap:5px}.connection-panel{grid-column:auto}.nav-button{font-size:8px;padding:7px 4px}}
 </style>
 
+<style id="focused-view-styles">
+.landing-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;min-height:450px;padding:44px 0 32px}
+.landing-copy h1{font-size:clamp(36px,4.1vw,60px);line-height:1.28;letter-spacing:-1px;font-weight:550;margin:19px 0 22px}
+.landing-copy h1 em{font-style:normal;color:var(--green);font-family:var(--serif)}
+.landing-description{color:#b0b4aa;font-size:15px;line-height:1.9;margin:0 0 26px}
+.landing-actions{display:flex;align-items:center;gap:24px}
+.start-local{min-height:54px;padding:0 26px;font-size:15px;gap:32px;box-shadow:0 8px 32px #c5ed9f12}
+.landing-meta{display:flex;align-items:center;gap:12px;margin:18px 0 0;color:var(--dim);font-size:11px}
+.landing-meta i{height:3px;width:3px;border-radius:50%;background:#666c60}
+.landing-art{height:375px;position:relative;isolation:isolate;background:radial-gradient(ellipse at 50% 56%,#c5ed9f08,transparent 68%);overflow:hidden}
+.landing-art::before{content:'';position:absolute;inset:25px;background-image:radial-gradient(#c5ed9f35 .7px,transparent .7px);background-size:27px 27px;mask-image:radial-gradient(ellipse,#0009,transparent 70%)}
+.preview-coordinate,.preview-foot{position:absolute;font:9px var(--mono);letter-spacing:2px;color:var(--dim);left:24px;top:14px}
+.preview-foot{top:auto;bottom:12px;left:0;width:100%;text-align:center;font-size:8px;letter-spacing:1.2px}
+.preview-orbit{position:absolute;left:6%;top:36%;width:88%;height:36%;border:1px solid #c5ed9f20;border-radius:50%;transform:rotate(-17deg)}
+.orbit-two{transform:rotate(17deg);border-color:#bdafe620;border-style:dashed}
+.preview-card{position:absolute;top:70px;left:15%;width:150px;height:170px;border:1px solid #edb28950;border-radius:18px;background:linear-gradient(130deg,#3e342a,#232320);padding:23px;box-shadow:0 20px 44px #0004;transform:rotate(-12deg);animation:preview-a 8s ease-in-out infinite}
+.preview-card span{font:9px var(--mono);letter-spacing:1px;color:var(--orange)}
+.preview-card strong{display:block;margin:18px 0 10px;font:35px var(--serif);color:#f7e8dc;letter-spacing:6px}
+.preview-card small{font-size:10px;color:#b6a596}
+.preview-b{left:auto;right:12%;top:91px;background:linear-gradient(130deg,#393242,#24232b);border-color:#bdafe650;transform:rotate(12deg);animation-name:preview-b}
+.preview-b span,.preview-b small{color:var(--purple)}
+.preview-meeting{position:absolute;top:225px;left:50%;transform:translateX(-50%);width:240px;text-align:center;z-index:2}
+.preview-meeting>.icon{width:27px;height:27px;color:var(--green);display:block;margin:0 auto 8px}
+.preview-meeting span{display:block;color:#a5ad9b;font-size:10px}
+.preview-meeting strong{font:30px var(--serif);color:var(--green);letter-spacing:12px;display:block;padding-left:12px;margin-top:5px}
+.quick-guide{list-style:none;padding:23px 0;margin:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);gap:28px}
+.quick-guide li{display:flex;align-items:flex-start;gap:15px}
+.guide-number{font:14px var(--mono);color:var(--green);padding-top:4px}
+.quick-guide strong{font-size:14px;font-weight:500}
+.quick-guide p{margin:5px 0 0;color:var(--muted);font-size:11px}
+.setup-heading{display:flex;align-items:end;justify-content:space-between;margin:34px 0 20px;gap:20px}
+.setup-heading .eyebrow{font-size:8px;letter-spacing:2px;color:var(--dim)}
+.setup-heading h2{font-size:20px;font-weight:500;margin:8px 0 0}
+.setup-heading>p{font-size:11px;color:var(--dim);margin:0 0 2px}
+body[data-view="home"] .workspace{display:block}
+body[data-view="home"] .game-panel{display:none}
+body[data-view="home"] .sidebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:18px}
+body[data-view="home"] .sidebar>.side-panel{margin:0;padding:23px}
+body[data-view="home"] .sidebar>.stats-panel{grid-column:1/-1;padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px 40px}
+body[data-view="home"] .stats-panel>.side-heading{grid-column:1/-1;margin:0}
+body[data-view="home"] .stats-panel>.stats-note{grid-column:1/-1}
+body[data-view="home"] .sidebar>blockquote{display:none}
+.back-to-lobby{display:inline-flex;align-items:center;gap:9px;padding:8px 0;background:none;border:0;color:var(--muted);font-size:12px;white-space:nowrap}
+.back-to-lobby:hover{color:var(--green)}
+.back-to-lobby span{font-size:20px}
+.play-intro{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:25px 0 22px}
+.focus-session{font-size:10px;color:var(--dim);margin:0 0 7px;letter-spacing:1px}
+.play-intro h1{font-size:23px;line-height:1.5;letter-spacing:.2px;font-weight:500;margin:0}
+.play-intro h1:focus{outline:0}
+.play-progress{display:flex;list-style:none;gap:20px;margin:0;padding:0;color:var(--dim);font-size:10px;white-space:nowrap}
+.play-progress li{display:flex;align-items:center;gap:7px}
+.play-progress li>span{display:grid;place-items:center;width:23px;height:23px;border:1px solid var(--line);border-radius:50%;font:10px var(--mono)}
+.play-progress li.is-active{color:var(--green)}
+.play-progress li.is-active>span{border-color:#c5ed9f60;background:#c5ed9f0b}
+.play-progress li.is-complete>span{color:var(--green);border-color:#c5ed9f30}
+body[data-view="game"] .app{max-width:1160px;padding:0 40px}
+body[data-view="game"] .topbar{height:76px;gap:22px}
+body[data-view="game"] .brand{margin-right:auto}
+body[data-view="game"] .brand-name{font-size:20px}
+body[data-view="game"] .brand-sub{display:none}
+body[data-view="game"] #gameNav,body[data-view="game"] #recordsBtn,body[data-view="game"] .local-tag{display:none}
+body[data-view="game"] .nav-button{padding:7px 9px;font-size:11px}
+body[data-view="game"] .workspace{display:block;padding-bottom:35px}
+body[data-view="game"] .sidebar,body[data-view="game"] .page-footer{display:none}
+body[data-view="game"][data-connection="local"] #inviteBtn{display:none}
+body[data-view="game"] .game-panel{box-shadow:0 15px 70px #0003;border-color:#42483c}
+body[data-view="game"] .arena{height:340px}
+body[data-view="game"] .mind-card{top:88px;width:180px;height:151px;padding:20px 23px;left:calc(50% - 238px)}
+body[data-view="game"] .mind-card.b{left:calc(50% + 58px)}
+body[data-view="game"] .mind-card strong{font-size:40px}
+body[data-view="game"] .mind-card strong.long-word{font-size:23px}
+body[data-view="game"] .mind-orb{top:136px}
+body[data-view="game"] .game-controls{padding:24px 30px 25px}
+body[data-view="game"] .player-box{padding:17px 20px}
+body[data-view="game"] .input-row input{font-size:19px;min-height:42px}
+body[data-view="game"] .reveal-button{min-height:50px;margin-top:18px;font-size:14px}
+body[data-view="game"] .board-footer{display:none}
+body[data-view="game"] #roomDock{border-bottom:1px solid var(--line)}
+body[data-view="game"] #roomDock>.connection-panel{background:none;border:0;border-radius:0;margin:0;padding:12px 24px}
+body[data-view="game"] #roomDock .side-heading{display:none}
+body[data-view="game"]:not(.waiting-for-friend) #roomDetails{display:flex;align-items:center;gap:15px}
+body[data-view="game"]:not(.waiting-for-friend) .room-code-row{border:0;background:none;padding:0;gap:12px;margin:0}
+body[data-view="game"]:not(.waiting-for-friend) .room-code-label{font-size:8px}
+body[data-view="game"]:not(.waiting-for-friend) .room-code-value{font-size:19px;letter-spacing:3px}
+body[data-view="game"]:not(.waiting-for-friend) .room-code-row .icon-button{width:29px;height:29px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-share-link,body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-scope,body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-expiry{display:none}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .connection-actions{margin:0 0 0 auto;display:flex;gap:7px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .connection-actions button{padding:8px 12px;min-height:33px;font-size:10px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{margin:0;font-size:10px}
+.waiting-room{text-align:center;padding:48px 22px 16px}
+.waiting-room .eyebrow{font-size:9px;justify-content:center}
+.waiting-room h2{font-family:var(--serif);font-size:28px;font-weight:500;margin:14px 0 11px}
+.waiting-room>p:last-child{font-size:12px;color:var(--muted)}
+.waiting-orbit{height:80px;width:80px;border:1px solid #c5ed9f35;border-radius:50%;margin:0 auto 25px;display:grid;place-items:center;box-shadow:0 0 0 18px #c5ed9f03}
+.waiting-orbit>.icon{width:40px;height:40px;color:var(--green)}
+body.waiting-for-friend .game-panel>.panel-heading,body.waiting-for-friend .game-panel>.arena,body.waiting-for-friend .game-panel>.game-controls,body.waiting-for-friend .game-panel>.history{display:none}
+body.waiting-for-friend #roomDock{border:0;max-width:470px;margin:0 auto 28px}
+body.waiting-for-friend #roomDock>.connection-panel{padding:15px 24px}
+body.waiting-for-friend .room-code-value{font-size:38px}
+body.waiting-for-friend .room-code-row{padding:16px 20px}
+body.waiting-for-friend .play-progress{display:none}
+@keyframes preview-a{50%{transform:translateY(-10px) rotate(-10deg)}
+}
+@keyframes preview-b{50%{transform:translateY(8px) rotate(10deg)}
+}
+@media(min-width:1500px){.landing-hero{min-height:490px}
+.landing-art{height:400px}
+}
+@media(max-width:1000px){.landing-hero{gap:8px}
+.landing-copy h1{font-size:43px}
+.preview-card{left:5%;width:133px;height:161px;padding:19px}
+.preview-b{left:auto;right:5%}
+.landing-actions{gap:15px}
+.start-local{padding:0 20px;gap:16px}
+body[data-view="home"] .sidebar{grid-template-columns:1fr 1fr}
+body[data-view="home"] .connection-panel{grid-column:1/-1}
+.landing-description{font-size:13px}
+.play-progress{gap:12px}
+}
+@media(max-width:700px){.landing-hero{grid-template-columns:1fr;gap:0;padding:33px 0 23px;min-height:0}
+.landing-copy{text-align:center}
+.landing-copy .eyebrow{justify-content:center;font-size:9px}
+.landing-copy h1{font-size:40px;margin:18px 0}
+.landing-description{font-size:13px;margin-bottom:22px}
+.landing-actions,.landing-meta{justify-content:center}
+.landing-art{height:276px;max-width:450px;width:100%;margin:24px auto 0}
+.preview-coordinate{top:2px;font-size:8px}
+.preview-card{top:33px;left:14%;width:126px;height:146px;padding:18px}
+.preview-b{top:49px;left:auto;right:12%}
+.preview-card strong{font-size:29px;margin:12px 0 8px}
+.preview-card small{font-size:9px}
+.preview-meeting{top:168px}
+.preview-meeting strong{font-size:26px}
+.preview-meeting>span{font-size:9px}
+.preview-foot{bottom:0;font-size:7px}
+.quick-guide{gap:12px;padding:19px 0}
+.quick-guide li{display:block;text-align:center}
+.guide-number{display:block;margin-bottom:8px;font-size:12px}
+.quick-guide strong{font-size:12px}
+.quick-guide p{font-size:10px;line-height:1.7;max-width:105px;margin:5px auto 0}
+.setup-heading{margin:28px 0 16px;display:block}
+.setup-heading h2{font-size:19px}
+.setup-heading>p{margin-top:8px}
+body[data-view="home"] .sidebar{gap:12px}
+body[data-view="home"] .sidebar>.side-panel{padding:17px}
+body[data-view="home"] .sidebar>.stats-panel{display:block}
+body[data-view="home"] .stats-panel>.side-heading{margin-bottom:16px}
+body[data-view="game"] .app{padding:0 20px}
+body[data-view="game"] .topbar{gap:12px;height:67px}
+body[data-view="game"] .brand-name{font-size:18px;letter-spacing:1px}
+body[data-view="game"] .brand-mark{width:30px;height:35px}
+body[data-view="game"] .brand{gap:6px}
+body[data-view="game"] .back-to-lobby{font-size:10px;gap:5px}
+.back-to-lobby span{font-size:17px}
+body[data-view="game"] .nav-button{padding:6px 2px;font-size:10px;gap:4px}
+body[data-view="game"] .nav-button .icon{width:13px}
+body[data-view="game"] .top-tools{gap:7px}
+body[data-view="game"] .icon-button{width:32px;height:32px}
+.play-intro{padding:20px 0 17px;display:block}
+.play-intro h1{font-size:19px}
+.focus-session{font-size:9px}
+.play-progress{margin-top:15px;gap:20px;font-size:10px}
+body[data-view="game"] .game-controls{padding:18px 18px 20px}
+body[data-view="game"] .arena{height:280px}
+body[data-view="game"] .mind-card{top:69px;left:calc(50% - 151px);width:126px;height:130px;padding:15px}
+body[data-view="game"] .mind-card.b{left:calc(50% + 25px)}
+body[data-view="game"] .mind-card strong{font-size:31px}
+body[data-view="game"] .mind-card strong.long-word{font-size:18px}
+body[data-view="game"] .mind-orb{top:112px;width:38px;height:38px;left:calc(50% - 19px)}
+body[data-view="game"] .player-box{padding:13px 14px}
+body[data-view="game"] .players{gap:12px}
+body[data-view="game"] .input-row input{font-size:16px}
+body[data-view="game"] #roomDock>.connection-panel{padding:11px 17px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDetails{flex-wrap:wrap;gap:10px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .connection-actions{margin-left:auto}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .connection-actions button{padding:6px 9px;font-size:9px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{font-size:9px}
+.waiting-room{padding:38px 16px 8px}
+.waiting-room h2{font-size:25px}
+.waiting-room>p:last-child{font-size:11px}
+.waiting-orbit{width:64px;height:64px}
+body.waiting-for-friend #roomDock{margin-bottom:22px}
+body.waiting-for-friend .room-code-value{font-size:32px}
+}
+@media(max-width:400px){.landing-copy h1{font-size:35px}
+.landing-actions{gap:13px}
+.start-local{font-size:13px;padding:0 19px;min-height:49px}
+.landing-actions .text-button{font-size:11px}
+.preview-card{left:7%;width:125px}
+.preview-b{left:auto;right:7%}
+body[data-view="game"] .app{padding:0 13px}
+body[data-view="game"] .topbar{gap:8px}
+body[data-view="game"] .brand-name{font-size:17px}
+body[data-view="game"] .brand-mark{display:none}
+body[data-view="game"] .back-to-lobby{font-size:9px}
+body[data-view="game"] .invite-top{font-size:9px;padding:6px}
+body[data-view="game"] .arena{height:260px}
+body[data-view="game"] .mind-card{width:111px;left:calc(50% - 132px);padding:12px;height:124px}
+body[data-view="game"] .mind-card.b{left:calc(50% + 21px)}
+body[data-view="game"] .mind-card strong{font-size:28px}
+body[data-view="game"] .mind-card strong.long-word{font-size:16px}
+body[data-view="game"] .arena-caption{bottom:19px}
+body[data-view="game"] .game-controls{padding:16px 13px 18px}
+body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%;text-align:right;margin-top:-4px}
+.play-progress{gap:15px}
+}
+@media(prefers-reduced-motion:reduce){.preview-card{animation:none}
+}
+</style>
 </head>
-<body>
+<body data-view="home" data-connection="local">
 <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.7 7.3L22 12l-7.3 2.7L12 22l-2.7-7.3L2 12l7.3-2.7Z"/></symbol>
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
@@ -2285,6 +2494,7 @@ body::before {
 </defs></svg>
 <div class="app">
   <header class="topbar">
+    <button class="back-to-lobby" id="backToLobby" hidden><span aria-hidden="true">←</span> 返回准备页</button>
     <div class="brand" aria-label="同词相遇 Mind Meld"><div class="brand-mark" aria-hidden="true"></div><div><div class="brand-name">同词相遇</div><div class="brand-sub">MIND MELD / 双人联想实验</div></div></div>
     <nav class="nav" aria-label="主导航">
       <button class="nav-button active" id="gameNav" aria-current="page"><span class="nav-dot"></span>默契实验室</button>
@@ -2294,13 +2504,20 @@ body::before {
     <div class="top-tools"><button class="invite-top" id="inviteBtn">邀请好友</button><span class="local-tag">本地双人</span><button class="icon-button" id="soundBtn" aria-label="开启音效" aria-pressed="false" title="开启音效"><svg class="icon" aria-hidden="true"><use id="soundIcon" href="#i-mute"/></svg></button></div>
   </header>
   <main>
-    <section class="intro" aria-labelledby="pageTitle">
-      <div><div class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>TWO MINDS. ONE WORD.</div><h1 id="pageTitle">两个脑洞，一场<em>奇妙相遇。</em></h1></div>
-      <p class="intro-note">从天马行空，到心有灵犀。<span>不必想得一样，只管慢慢靠近。</span></p>
+    <section class="landing-view" id="landingView" aria-labelledby="pageTitle">
+      <div class="landing-hero">
+        <div class="landing-copy"><div class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>TWO MINDS. ONE WORD.</div><h1 id="pageTitle">从两个词，<br>走到<em>同一个答案。</em></h1><p class="landing-description">各写一个词，慢慢靠近。<br>看看你们能在第几轮，想到同一个答案。</p><div class="landing-actions"><button class="primary start-local" id="startLocalBtn">开始同屏游戏<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button><button class="text-button" id="exploreOnlineBtn">和好友联机 <span aria-hidden="true">↗</span></button></div><p class="landing-meta"><span>两个人</span><i></i><span>一场脑洞实验</span><i></i><span>无需注册</span></p></div>
+        <div class="landing-art" aria-label="玩法示例：森林与海洋，一起想到自然"><div class="preview-orbit orbit-one"></div><div class="preview-orbit orbit-two"></div><span class="preview-coordinate">EXPERIMENT / 001</span><div class="preview-card preview-a"><span>YOUR MIND</span><strong>森林</strong><small>你的第一个词</small></div><div class="preview-card preview-b"><span>THEIR MIND</span><strong>海洋</strong><small>对方的第一个词</small></div><div class="preview-meeting"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg><span>也许下一轮，你们都会想到</span><strong>自然</strong></div><span class="preview-foot">DIFFERENT STARTS. A SHARED DESTINATION.</span></div>
+      </div>
+      <ol class="quick-guide" aria-label="三步开始游玩"><li><span class="guide-number">01</span><div><strong>各写一个词</strong><p>悄悄输入，写好后锁定。</p></div></li><li><span class="guide-number">02</span><div><strong>同时揭晓</strong><p>看看两个脑洞，相隔多远。</p></div></li><li><span class="guide-number">03</span><div><strong>找到共同答案</strong><p>连接上轮两个词，直到同词相遇。</p></div></li></ol>
+      <div class="setup-heading"><div><span class="eyebrow">BEFORE WE BEGIN</span><h2>准备好，开启这次相遇。</h2></div><p>可以直接开始，也可以先选一种节奏。</p></div>
     </section>
+    <section class="play-intro" id="playIntro" aria-labelledby="focusTitle" hidden><div><p class="focus-session" id="focusSession">同屏双人 · 自由漫游</p><h1 id="focusTitle" tabindex="-1">各想一个词，让脑洞出发。</h1></div><ol class="play-progress" id="playProgress" aria-label="当前对局步骤"><li data-step="0"><span>1</span>写下灵感</li><li data-step="1"><span>2</span>锁定词语</li><li data-step="2"><span>3</span>同时揭晓</li></ol></section>
     <div class="workspace">
       <section class="game-panel" aria-label="双人联想游戏">
         <div class="panel-heading"><div class="room-title"><svg class="icon" aria-hidden="true"><use href="#i-orbit"/></svg>脑洞交汇处<small>THE MEETING SPACE</small></div><div class="room-actions"><span class="round-badge">ROUND <b id="roundNum">01</b></span><button class="icon-button" id="resetBtn" aria-label="重新开始本局" title="重新开始"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg></button></div></div>
+        <div class="waiting-room" id="waitingRoom" hidden><div class="waiting-orbit" aria-hidden="true"><svg class="icon"><use href="#i-infinity"/></svg></div><p class="eyebrow">A LITTLE SPACE, JUST FOR TWO.</p><h2>留一个位置，等好友来。</h2><p>发送下面的邀请码或链接。好友确认加入后，就能开始。</p></div>
+        <div id="roomDock" hidden></div>
         <div class="arena" id="arena">
           <svg class="orbit-svg" viewBox="0 0 820 302" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="orbit-line"><stop stop-color="#edb289" stop-opacity=".05"/><stop offset=".3" stop-color="#edb289" stop-opacity=".3"/><stop offset=".7" stop-color="#bdafe6" stop-opacity=".3"/><stop offset="1" stop-color="#bdafe6" stop-opacity=".05"/></linearGradient><radialGradient id="floor-glow"><stop stop-color="#c5ed9f" stop-opacity=".04"/><stop offset="1" stop-color="#c5ed9f" stop-opacity="0"/></radialGradient></defs><ellipse cx="410" cy="215" rx="310" ry="62" fill="url(#floor-glow)"/><g fill="none" stroke="url(#orbit-line)" stroke-width=".8"><ellipse cx="410" cy="187" rx="288" ry="65" transform="rotate(-12 410 187)"/><ellipse cx="410" cy="169" rx="270" ry="82" transform="rotate(13 410 169)" stroke-dasharray="3 7"/><ellipse cx="410" cy="210" rx="237" ry="35"/><ellipse cx="410" cy="210" rx="170" ry="25"/><path d="M142 200q268 70 536 0M215 224l-31 19m165-11-7 25m126-25 7 25m126-33 31 19"/></g><circle cx="145" cy="171" r="2.5" fill="#c5ed9f" opacity=".6"/><circle cx="668" cy="150" r="2" fill="#bdafe6" opacity=".6"/><path d="m605 53 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="none" stroke="#bdafe6" opacity=".4"/></svg>
           <div class="arena-corner"><svg class="icon" aria-hidden="true"><use href="#i-infinity"/></svg><span id="arenaTheme">自由联想 · 不设边界</span></div><span class="arena-coordinate">A ↔ B / 同频实验</span>
@@ -2504,6 +2721,35 @@ body::before {
   var historyOpen = false, inspirationIndex = 0, lastRecord = null;
   var onlineRoom=null,onlineReady=false,onlineConnected=false,networkBusy=false,serverInfo=null;
   var serverOffset=0,onlineGeneration=0,pollController=null,timerIntentRound=null,joinDiscardConfirmed=false;
+  var view='home',roomHome=$('connectionPanel').parentNode,roomHomeNext=$('connectionPanel').nextElementSibling;
+  try{if(restored&&sessionStorage.getItem('tcxy.view')==='game')view='game';}catch(_){}
+  function renderView() {
+    var playing=view==='game',waiting=playing&&onlineRoom&&onlineRoom.status==='waiting',ready=game.locked.filter(Boolean).length;
+    document.body.dataset.view=view;document.body.dataset.connection=onlineRoom?'online':'local';document.body.classList.toggle('waiting-for-friend',!!waiting);
+    $('landingView').hidden=playing;$('playIntro').hidden=!playing;$('backToLobby').hidden=!playing;
+    document.querySelector('.game-panel').inert=!playing;document.querySelector('.sidebar').inert=playing;
+    var panel=$('connectionPanel'),mount=playing&&onlineRoom?$('roomDock'):roomHome;
+    if(panel.parentNode!==mount){if(mount===roomHome)roomHome.insertBefore(panel,roomHomeNext);else mount.append(panel);}
+    $('roomDock').hidden=!playing||!onlineRoom;$('waitingRoom').hidden=!waiting;
+    $('startLocalBtn').firstChild.textContent=hasProgress()?'继续同屏对局':'开始同屏游戏';
+    $('focusSession').textContent=(onlineRoom?'好友联机 · 玩家 '+(onlineRoom.seat===0?'A':'B'):'同屏双人')+' · '+(game.mode==='timed'?'限时心跳':'自由漫游')+' · '+themes[game.theme].label.split(' · ')[0];
+    $('focusTitle').textContent=waiting?'房间已准备好，等好友加入。':game.phase==='done'?'这一次，你们心有灵犀。':game.phase==='countdown'?'让两个答案，同时亮相。':game.phase==='next'?'连接这两个词，再靠近一步。':game.phase==='timeout'?'换个灵感，下一轮继续。':ready===2?'准备好了，一起揭晓。':ready===1?'一个脑洞已就绪，等待另一个答案。':game.round===1?'各想一个词，让脑洞出发。':'看着上一轮的词，找到它们的联系。';
+    var step=game.phase==='input'?(ready===2?2:ready?1:0):2;
+    $('playProgress').querySelectorAll('li').forEach(function(item,i){item.classList.toggle('is-active',i===step&&game.phase!=='done');item.classList.toggle('is-complete',i<step||game.phase==='done');if(i===step)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current');});
+  }
+  function setView(next) {
+    var changed=view!==next;view=next;
+    try{sessionStorage.setItem('tcxy.view',view);}catch(_){}
+    renderView();
+    if(changed)requestAnimationFrame(function(){window.scrollTo({top:0,behavior:'instant'});if(view==='game')$('focusTitle').focus({preventScroll:true});else $('startLocalBtn').focus({preventScroll:true});});
+  }
+  function startLocal() { if(!hasProgress())startGame({mode:game.mode,theme:game.theme});setView('game');announce('已进入同屏对局。先各写一个词，写好后锁定。'); }
+  function returnToLobby() {
+    if(onlineRoom){leaveRoom();return;}
+    function finish(){startGame({mode:game.mode,theme:game.theme});setView('home');}
+    if(!hasProgress()){setView('home');return;}
+    openDialog('返回准备页？',function(body){body.append(el('p','','当前未完成的对局会结束，已完成的相遇记录会保留。'));},[{label:'继续当前局',kind:'secondary'},{label:'结束并返回',kind:'primary',action:finish}]);
+  }
   function toast(message) { $('toast').textContent = message; $('toast').hidden = false; clearTimeout(toastTimeout); toastTimeout = setTimeout(function () { $('toast').hidden = true; }, 3200); }
   function announce(message) { $('announcement').textContent = message; }
   function saveSession() { if(!onlineRoom)write(keys.session, core.snapshot(game)); }
@@ -2594,13 +2840,14 @@ body::before {
     $('hint').textContent = phase === 'next' ? '看着刚刚揭晓的两个词，各想一个连接它们的词。' : phase === 'timeout' ? '时间到，私密词已清空；本轮计入回合，下一轮再试一次。' : phase === 'countdown' ? '3、2、1，让灵感同时落地。' : ready === 2 ? '两位已就绪。会是同一个词吗？' : ready === 1 ? '一颗脑洞已锁定，等待另一位玩家。' : game.mode === 'timed' ? '任意一人开始输入，即启动本轮 30 秒倒计时。' : '各写一个词，锁定后，一起揭晓。 ✧';
     renderTimer();
     if(onlineRoom)renderOnlineControls();
+    renderView();
   }
   function renderSettings() {
     document.querySelectorAll('[data-mode]').forEach(function (button) { button.setAttribute('aria-pressed',String(button.dataset.mode === game.mode)); });
     $('modeDescription').replaceChildren(document.createTextNode(game.mode === 'timed' ? '每轮 30 秒，从首次输入开始。' : '不赶时间，让灵感慢慢发生。'),el('br'),document.createTextNode(game.mode === 'timed' ? '时间到就进入下一轮，心跳和脑洞一起加速。' : '用更少的回合，找到你们的同一个词。'));
     $('themeSelect').value = game.theme;
   }
-  function render() { renderControls(); renderArena(); renderHistory(); renderSettings(); renderStats(); renderOnlineControls(); }
+  function render() { renderControls(); renderArena(); renderHistory(); renderSettings(); renderStats(); renderOnlineControls(); renderView(); }
   function warn(message) { $('hint').textContent = message; $('hint').classList.add('warn'); clearTimeout(hintTimeout); hintTimeout = setTimeout(function () { $('hint').classList.remove('warn'); },3000); }
   function checkDeadline() { if(onlineRoom)return false; if (core.tick(game,Date.now())) { clearTimeout(revealTimeout); render(); saveSession(); announce('这一轮时间到，未揭晓的词已清空，可以开始下一轮。'); playSound('tick'); return true; } return false; }
   function lock(side) {
@@ -2789,7 +3036,7 @@ body::before {
       catch(error){if(generation!==onlineGeneration)return;if(['UNAUTHORIZED','ROOM_NOT_FOUND','ROOM_EXPIRED','ROOM_CLOSED'].includes(error.code)){closeOnlineRoom('房间已失效或服务已重启，请重新邀请好友。');return;}failures++;onlineConnected=false;renderOnlineControls();await new Promise(function(resolve){setTimeout(resolve,Math.min(8000,500*Math.pow(2,failures-1)));});}
     }
   }
-  function beginRoom(room) { stopRoomPoll();lastRecord=null;applyRoom(room);if(onlineRoom)write(keys.session,null);pollRoom(onlineGeneration); }
+  function beginRoom(room) { stopRoomPoll();lastRecord=null;setView('game');applyRoom(room);if(onlineRoom)write(keys.session,null);pollRoom(onlineGeneration); }
   async function onlineAction(type,extra) {
     if(!onlineRoom||networkBusy)return;
     networkBusy=true;renderOnlineControls();
@@ -2808,6 +3055,7 @@ body::before {
     if(room&&!skipLeave)roomRequest('/api/rooms/'+room.code+'/actions',{body:{type:'leave',gameId:room.game.id,round:room.game.round}}).catch(function(){});
     $('countdown').hidden=true;
     if(game.phase!=='done')startGame({mode:game.mode,theme:game.theme});else render();
+    setView('home');
     toast(message);
   }
   function leaveRoom() {
@@ -2925,7 +3173,9 @@ body::before {
   $('shuffleBtn').addEventListener('click',function(){updateInspiration(true);playSound('tick');});$('dailyBtn').addEventListener('click',dailyInspiration);
   $('historyToggle').addEventListener('click',function(){historyOpen=!historyOpen;renderHistory();});
   $('rulesBtn').addEventListener('click',showRules);$('recordsBtn').addEventListener('click',showRecords);$('allRecordsBtn').addEventListener('click',showRecords);
-  $('gameNav').addEventListener('click',function(){document.querySelector('.game-panel').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});});
+  $('gameNav').addEventListener('click',function(){if(view==='game')returnToLobby();else $('startLocalBtn').focus();});
+  $('startLocalBtn').addEventListener('click',startLocal);$('backToLobby').addEventListener('click',returnToLobby);
+  $('exploreOnlineBtn').addEventListener('click',function(){$('connectionPanel').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});$('createRoomBtn').focus({preventScroll:true});});
   $('closeModal').addEventListener('click',function(){$('modal').close();});
   $('modal').addEventListener('click',function(event){if(event.target!==$('modal'))return;var rect=$('modal').getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)$('modal').close();});
   $('modal').addEventListener('close',function(){var callback=modalCallback;modalCallback=null;if(callback)callback();else if(modalReturnFocus&&modalReturnFocus.isConnected&&!modalReturnFocus.disabled)modalReturnFocus.focus({preventScroll:true});});

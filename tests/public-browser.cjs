@@ -25,12 +25,16 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
     const apiRequests=[];pages.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/'))apiRequests.push(request.url());});
     const response=await pages.goto(pagesUrl);assert.equal(response.status(),200);
     await until(pages,()=>document.querySelector('#connectionHint').textContent.includes('进入联机版'));
+    assert.equal(await pages.locator('#landingView').isVisible(),true);
+    assert.equal(await pages.locator('#arena').isVisible(),false);
+    await pages.locator('#startLocalBtn').click();
     await pages.locator('#inA').fill('星空');await pages.locator('#lockA').click();await pages.locator('#inB').fill('星空');await pages.locator('#lockB').click();await pages.locator('#go').click();
     await until(pages,()=>document.querySelector('#resultControls').hidden===false);
     assert.equal(await pages.locator('#statTotal').innerText(),'1');assert.equal(apiRequests.length,0);
     await pages.screenshot({path:path.join(output,'public-pages.png'),fullPage:true});
   });
   await check('Pages offers an explicit working HTTPS online entry',async()=>{
+    await pages.locator('#backToLobby').click();
     await pages.locator('#inviteBtn').click();await pages.locator('#modalActions').getByRole('button',{name:'进入联机版',exact:true}).click();
     await pages.waitForURL(gameUrl+'**');
     await until(pages,()=>document.querySelector('#connectionHint').textContent.includes('支持好友联机'));
@@ -44,6 +48,7 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
     assert.equal(new URL(link).origin,new URL(gameUrl).origin);assert.equal(new URL(link).protocol,'https:');assert.equal(new URL(link).pathname,new URL(gameUrl).pathname);
     await host.locator('#closeModal').click();await guest.goto(link);await guest.locator('#confirmJoinBtn').click();
     await until(guest,()=>!document.querySelector('#inB').disabled);await until(host,()=>!document.querySelector('#inA').disabled);
+    assert.equal(await host.locator('#landingView').isVisible(),false);assert.equal(await guest.locator('.sidebar').isVisible(),false);
     const cookie=(await a.cookies()).find(item=>item.name==='tcxy_session');assert.ok(cookie.secure&&cookie.httpOnly);assert.equal(cookie.sameSite,'Strict');assert.equal(cookie.path,new URL(gameUrl).pathname);
     await host.locator('#inA').fill('公网星雾');await host.locator('#lockA').click();
     await until(guest,()=>document.querySelector('#statusA').textContent.includes('已锁定'));

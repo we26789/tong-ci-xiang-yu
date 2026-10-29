@@ -17,7 +17,17 @@ async function check(name, run) {
   console.log('PASS ' + name);
 }
 async function until(page, fn) { await page.waitForFunction(fn, null, {timeout: 6000}); }
+async function startIfHome(page) {
+  if (await page.locator('#startLocalBtn').isVisible()) await page.locator('#startLocalBtn').click();
+}
+async function returnHome(page) {
+  await page.locator('#backToLobby').click();
+  if (await page.locator('#modal').evaluate(node => node.open)) {
+    await page.getByRole('button', {name:'结束并返回',exact:true}).click();
+  }
+}
 async function enterPair(page, a, b) {
+  await startIfHome(page);
   await page.locator('#inA').fill(a);
   await page.locator('#lockA').click();
   await page.locator('#inB').fill(b);
@@ -49,6 +59,7 @@ async function screenshot(page, name) {
     await screenshot(page, 'after-desktop');
   });
   await check('Responsive layouts at 320, 390, 768, 1024 and 1440px', async () => {
+    await startIfHome(page);
     for (const width of [320,390,768,1024,1440]) {
       await page.setViewportSize({width, height: width < 500 ? 844 : 1050});
       await page.waitForTimeout(900);
@@ -65,6 +76,7 @@ async function screenshot(page, name) {
     }
   });
   await check('Rules and empty records use keyboard-accessible native dialogs', async () => {
+    await returnHome(page);
     await page.locator('#rulesBtn').click();
     assert.equal(await page.locator('#modal').evaluate(node => node.open), true);
     assert.match(await page.locator('#modalBody').innerText(), /30 秒/);
@@ -89,6 +101,7 @@ async function screenshot(page, name) {
     await page.locator('#soundBtn').click();
   });
   await check('Invalid input and IME Enter cannot accidentally lock a word', async () => {
+    await startIfHome(page);
     await page.locator('#inA').fill('。。。');
     await page.locator('#lockA').click();
     assert.match(await page.locator('#hint').innerText(), /不能只有标点/);
@@ -156,6 +169,7 @@ async function screenshot(page, name) {
     } else assert.match(await page.locator('#toast').innerText(),/已复制/);
   });
   await check('Records replay real history and survive a browser refresh', async () => {
+    await returnHome(page);
     await page.locator('#recordsBtn').click();
     assert.equal(await page.locator('.record-entry').count(),1);
     await page.locator('.record-entry summary').click();
@@ -166,14 +180,17 @@ async function screenshot(page, name) {
     assert.equal(await page.locator('#statTotal').innerText(),'1');
     assert.equal(await page.locator('#statBest').innerText(),'2');
   });
-  await check('Mode change asks before discarding an active round', async () => {
+  await check('Returning to preparation asks before discarding an active round', async () => {
+    await startIfHome(page);
     await page.locator('#inA').fill('需要保留');
-    await page.locator('[data-mode="timed"]').click();
+    await page.locator('#backToLobby').click();
     assert.equal(await page.locator('#modal').evaluate(node=>node.open),true);
     await page.getByRole('button',{name:'继续当前局',exact:true}).click();
     assert.equal(await page.locator('#inA').inputValue(),'需要保留');
+    await page.locator('#backToLobby').click();
+    await page.getByRole('button',{name:'结束并返回',exact:true}).click();
     await page.locator('[data-mode="timed"]').click();
-    await page.getByRole('button',{name:'开始新一局',exact:true}).click();
+    await startIfHome(page);
     await until(page,()=>document.querySelector('[data-mode="timed"]').getAttribute('aria-pressed')==='true');
     assert.equal(await page.locator('#statBest').innerText(),'—');
   });
@@ -194,8 +211,8 @@ async function screenshot(page, name) {
     await page.clock.resume();
   });
   await check('Themes, longer words and reduced motion remain playable', async () => {
+    await returnHome(page);
     await page.locator('#themeSelect').selectOption('space');
-    await page.getByRole('button',{name:'开始新一局',exact:true}).click();
     await until(page,()=>document.querySelector('#themeSelect').value==='space');
     await page.emulateMedia({reducedMotion:'reduce'});
     await enterPair(page,'星际旅行的终点站','银河系漫游的起点');
