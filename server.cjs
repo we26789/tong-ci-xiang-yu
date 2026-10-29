@@ -16,7 +16,7 @@ function networkAddresses() {
     .map(item=>({name,address:item.address})))
     .sort((a,b)=>Number(/virtual|vethernet|docker|wsl/i.test(a.name))-Number(/virtual|vethernet|docker|wsl/i.test(b.name)));
 }
-function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomStore(), limit = 120, getNetworkAddresses = networkAddresses} = {}) {
+function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomStore(), limit = 120, getNetworkAddresses = networkAddresses, trustProxy = process.env.TRUST_PROXY || ''} = {}) {
   let published = null;
   if (publicUrl) {
     published = new URL(publicUrl);
@@ -30,6 +30,11 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   const waitsPerSeat=new Map();
   const pendingWaits=new Set();
   store.setMaxListeners(0);
+  function clientAddress(req) {
+    const peer=req.socket.remoteAddress||'',forwarded=req.headers['x-real-ip'];
+    if(trustProxy==='loopback'&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(peer)&&typeof forwarded==='string'&&net.isIP(forwarded))return forwarded;
+    return peer;
+  }
   const cookieToken=req=>{const match=(req.headers.cookie||'').match(/(?:^|;\s*)tcxy_session=([a-zA-Z0-9_-]{43})(?:;|$)/);return match?match[1]:'';};
   const cookie=value=>'tcxy_session='+value+'; Path=/; HttpOnly; SameSite=Strict; Max-Age='+(value?'7200':'0')+(published?.protocol==='https:'?'; Secure':'');
   function security(res,scriptHashes='') {
@@ -55,7 +60,7 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   }
   function decorate(req,view) { if(!view)return null;const info=sharing(req);return {...view,shareScope:info.shareScope,shareUrl:info.baseUrl+'/?room='+view.code}; }
   function throttle(req,kind) {
-    const key=(req.socket.remoteAddress||'unknown')+':'+kind,now=Date.now();
+    const key=(clientAddress(req)||'unknown')+':'+kind,now=Date.now();
     let value=rates.get(key);if(!value||now-value.start>=60000){
       if(rates.size>=5000){for(const[k,v]of rates)if(now-v.start>=60000)rates.delete(k);if(rates.size>=5000)throw new RoomError('SERVER_BUSY','服务繁忙，请稍后重试。',503);}
       value={start:now,count:0};rates.set(key,value);
@@ -125,12 +130,12 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
       const input=await body(req);
       if(route==='/api/rooms'){
         throttle(req,'create');
-        const member=intent(req,input,(req.socket.remoteAddress||'')+':create',()=>store.create(input,token));
+        const member=intent(req,input,clientAddress(req)+':create',()=>store.create(input,token));
         res.setHeader('Set-Cookie',cookie(member.token));json(res,201,{room:decorate(req,store.view(member.code,member.token))});return;
       }
       if(roomRoute&&roomRoute[2]==='members'){
         throttle(req,'join');const code=roomRoute[1].toUpperCase();
-        const member=intent(req,input,(req.socket.remoteAddress||'')+':join',()=>store.join(code,token));
+        const member=intent(req,input,clientAddress(req)+':join',()=>store.join(code,token));
         res.setHeader('Set-Cookie',cookie(member.token));json(res,201,{room:decorate(req,store.view(member.code,member.token))});return;
       }
       if(roomRoute&&roomRoute[2]==='actions'){

@@ -4,6 +4,16 @@ const crypto = require('node:crypto');
 const {createApp} = require('../server.cjs');
 const http = require('node:http');
 
+test('forwarded client identity is trusted only when loopback proxy support is enabled',async t=>{
+  for(const trustProxy of ['', 'loopback']){
+    const app=createApp({trustProxy});await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));t.after(()=>app.close());
+    const base='http://127.0.0.1:'+app.server.address().port,key=crypto.randomUUID();
+    async function create(ip){const response=await fetch(base+'/api/rooms',{method:'POST',headers:{Origin:base,'Content-Type':'application/json','Idempotency-Key':key,'X-Real-IP':ip},body:'{"mode":"classic","theme":"free"}'});assert.equal(response.status,201);return (await response.json()).room.code;}
+    const first=await create('198.51.100.1'),second=await create('198.51.100.2');
+    assert.equal(first===second,trustProxy!=='loopback');
+  }
+});
+
 test('changing networks refreshes invitation URLs and host validation without losing rooms',async t=>{
   let address='192.168.1.20';
   const app=createApp({getNetworkAddresses:()=>[{name:'wifi',address}]});

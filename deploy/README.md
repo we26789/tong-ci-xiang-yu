@@ -16,10 +16,13 @@
 ```dotenv
 HOST=127.0.0.1
 PORT=41731
+TRUST_PROXY=loopback
 PUBLIC_URL=https://你的公网域名或已签发证书的IP地址
 ```
 
 可以参考本目录的 systemd 和 Nginx 配置。不要把证书私钥、SSH 私钥或实际环境文件提交到仓库。新建虚拟主机前检查冲突，执行 `nginx -t` 成功后再 reload。
+
+`TRUST_PROXY=loopback` 只用于仅监听回环地址、由本机 Nginx 转发的部署：此时读取本机代理覆盖写入的 `X-Real-IP`，按实际玩家地址限速。直接对外监听的本地服务保持默认值，不信任客户端转发头。
 
 ## 验收与维护
 
