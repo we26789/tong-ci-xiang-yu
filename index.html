@@ -2883,7 +2883,13 @@ body::before {
     },[{label:'关闭，等待好友',kind:'secondary'},{label:'分享邀请',kind:'primary',action:shareInvitation}]);
   }
   async function bootRooms() {
-    if(location.protocol==='file:'){$('connectionHint').textContent='当前为离线入口 · 通过联机服务地址可邀请好友';return;}
+    if(location.protocol==='file:'){
+      $('connectionHint').textContent='离线入口 · 现在只能同屏玩，邀请好友要先启动联机服务';
+      $('createRoomBtn').textContent='联机需启动服务';
+      ['createRoomBtn','joinRoomBtn','inviteBtn'].forEach(function(id){$(id).disabled=true;});
+      if(new URL(location.href).searchParams.has('room'))explainOffline();
+      return;
+    }
     if(document.querySelector('meta[name="tcxy-hosting"][content="pages"]')){
       var hasOnlineEntry=!!document.querySelector('meta[name="tcxy-online-url"]');
       $('connectionHint').textContent=hasOnlineEntry?'同屏随时可玩 · 好友邀请请进入联机版':'同屏模式可用 · 公网联机暂未启用';
@@ -2897,7 +2903,7 @@ body::before {
       var session=await roomRequest('/api/session'),code=new URL(location.href).searchParams.get('room');
       if(session.room){beginRoom(session.room);if(code&&code.toUpperCase()!==session.room.code)showJoin(code.toUpperCase());else if(onlineRoom)toast('已恢复联机席位，你是玩家 '+(onlineRoom.seat===0?'A':'B')+'。');}
       else if(code)showJoin(code.toUpperCase());
-    }catch(_){onlineReady=false;$('connectionHint').textContent='同屏模式可用 · 当前地址暂未开启联机服务';}
+    }catch(_){onlineReady=false;$('connectionHint').textContent='同屏模式可用 · 当前地址暂未开启联机服务';['createRoomBtn','joinRoomBtn','inviteBtn'].forEach(function(id){$(id).disabled=true;});}
   }
   window.addEventListener('offline',function(){if(!onlineRoom)return;onlineConnected=false;renderOnlineControls();stopRoomPoll();pollRoom(onlineGeneration,true);});
   window.addEventListener('online',function(){if(!onlineRoom)return;stopRoomPoll();pollRoom(onlineGeneration,true);});
