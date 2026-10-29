@@ -25,7 +25,7 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
     await pages.screenshot({path:path.join(output,'public-pages.png'),fullPage:true});
   });
   await check('Pages offers an explicit working HTTPS online entry',async()=>{
-    await pages.locator('#inviteBtn').click();await pages.getByRole('button',{name:'进入联机版',exact:true}).click();
+    await pages.locator('#inviteBtn').click();await pages.locator('#modalActions').getByRole('button',{name:'进入联机版',exact:true}).click();
     await pages.waitForURL(new URL(gameUrl).origin+'/**');
     await until(pages,()=>document.querySelector('#connectionHint').textContent.includes('支持好友联机'));
   });
