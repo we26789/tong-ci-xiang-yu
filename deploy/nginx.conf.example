@@ -1,0 +1,20 @@
+# Use a separate virtual host. Replace the hostname and certificate paths.
+server {
+    listen 443 ssl;
+    server_name GAME_HOST;
+    ssl_certificate CERTIFICATE_FULLCHAIN;
+    ssl_certificate_key CERTIFICATE_PRIVATE_KEY;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 8k;
+
+    location / {
+        proxy_pass http://127.0.0.1:41731;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_read_timeout 35s;
+        proxy_send_timeout 15s;
+    }
+}

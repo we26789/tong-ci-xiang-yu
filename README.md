@@ -2,6 +2,10 @@
 
 两个脑洞，一场奇妙相遇。支持**离线同屏**和**邀请码联机**的双人联想游戏。
 
+- [在线游玩（同屏版）](https://we26789.github.io/tong-ci-xiang-yu/)
+- [好友联机版](https://120.77.201.3/)
+- [GitHub 源码](https://github.com/we26789/tong-ci-xiang-yu)
+
 ## 开始游玩
 
 ### 离线同屏
@@ -39,11 +43,11 @@ node server.cjs
 
 联机房间存在服务进程内存中，服务重启后房间失效。终端关闭会停止服务。
 
-### 未来放到 GitHub
+### GitHub 与公网联机
 
-本轮没有创建远程仓库、推送或公网发布。可以把整个项目作为源码上传 GitHub。
+完整源码托管在 GitHub。推送 `main` 后，GitHub Actions 先执行游戏逻辑、房间隐私、HTTP 和静态构建测试，再发布 GitHub Pages 同屏版。Pages 的「邀请好友」会提示进入独立的联机版；网页不会向 Pages 请求不存在的房间接口。
 
-**GitHub Pages 只提供静态页面，不能运行这个 Node 房间服务。** 异地联机需要将 `server.cjs` 和前端一起部署到支持 Node 的 HTTPS 服务，再配置真实公网地址：
+**GitHub Pages 只提供静态页面，不能运行 Node 房间服务。** 联机版将 `server.cjs` 和前端一起部署到支持 Node 的 HTTPS 服务，前端与接口保持同源。公网服务使用 `PUBLIC_URL`：
 
 ```powershell
 $env:PUBLIC_URL = 'https://你的实际游戏域名'
@@ -53,6 +57,10 @@ node server.cjs
 `PUBLIC_URL` 必须是根路径地址，不含账号、查询参数或片段；公网地址须为 HTTPS。它只控制分享地址与安全 Cookie 配置，设置此变量不会自动部署网站或生成域名。前端与接口保持同源；不需要配置第三方中转或把密钥写入网页。
 
 当前服务采用单进程内存房间；部署时应保持单实例，或先接入共享状态与分布式限速后再扩容。
+
+GitHub 仓库变量 `ONLINE_GAME_URL` 控制 Pages 的联机入口。修改后在 Actions 手动运行发布工作流即可生效。它应当是 HTTPS 根地址，不含账号、路径、参数或片段。构建只发布 `_site/index.html` 和 `.nojekyll`，服务端文件、本机记录、备份和环境配置不会进入静态网站。
+
+服务器部署和回退说明见 [deploy/README.md](deploy/README.md)。
 
 ## 怎么玩
 
@@ -112,4 +120,4 @@ $env:PLAYWRIGHT_MODULE = '本机 Playwright 模块绝对路径'
 npm run test:online
 ```
 
-自动化使用隔离的浏览器环境。本机和实际网卡地址已参与双浏览器验证，但没有用两台物理设备或公网部署进行验收。房间服务器使用标准库，没有需要安装或审计的第三方运行包。
+自动化使用隔离的浏览器环境，覆盖本机和实际网卡地址的双浏览器联机。公网验收需要对实际 HTTPS 服务再执行双会话创建、加入、锁词、揭晓和退出检查；本地测试不能替代公网验收。房间服务器只使用 Node 标准库，没有第三方运行依赖。

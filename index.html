@@ -2812,7 +2812,15 @@ body::before {
     if(!onlineRoom)return;
     openDialog('离开这次相遇？',function(body){body.append(el('p','','退出后房间会关闭，好友也会收到提示。已经完成的相遇战绩会保留。'));},[{label:'留在房间',kind:'secondary'},{label:'退出房间',kind:'primary',action:async function(){if(!onlineRoom)return;var room=onlineRoom;stopRoomPoll();try{await roomRequest('/api/rooms/'+room.code+'/actions',{body:{type:'leave',gameId:room.game.id,round:room.game.round}});closeOnlineRoom('已退出房间，可以开启新的相遇。',null,true);}catch(error){toast('暂时无法确认退出，正在重连房间。');pollRoom(onlineGeneration);}}}]);
   }
-  function explainOffline() { openDialog('换一个能联机的入口',function(body){body.append(el('p','','当前入口支持离线同屏游玩。好友邀请需要通过已启用联机服务的网页地址打开。'),el('p','dialog-note','本地联机服务启动方式已写在项目 README 中。局域网联机时，两个人需要访问同一个服务并连接同一网络。'));}); }
+  function explainOffline() {
+    var entry=document.querySelector('meta[name="tcxy-online-url"]'),target=entry&&entry.content;
+    if(target){
+      var destination=new URL(target),code=new URL(location.href).searchParams.get('room');
+      if(code&&/^[A-HJ-NP-Z2-9]{6}$/.test(code.toUpperCase()))destination.searchParams.set('room',code.toUpperCase());
+      openDialog('和好友，各自打开一扇脑洞',function(body){body.append(el('p','','当前入口可以同屏游玩。进入联机版，就能创建房间、输入邀请码，与好友各自操作。'));},[{label:'继续同屏游玩',kind:'secondary'},{label:'进入联机版',kind:'primary',action:function(){saveSession();location.assign(destination.href);}}]);return;
+    }
+    openDialog('换一个能联机的入口',function(body){body.append(el('p','','当前入口支持离线同屏游玩。好友邀请需要通过已启用联机服务的网页地址打开。'),el('p','dialog-note','本地联机服务启动方式已写在项目 README 中。局域网联机时，两个人需要访问同一个服务并连接同一网络。'));});
+  }
   function newRoom() {
     if(!onlineReady){explainOffline();return;}
     if(onlineRoom){showInvite();return;}
@@ -2876,6 +2884,11 @@ body::before {
   }
   async function bootRooms() {
     if(location.protocol==='file:'){$('connectionHint').textContent='当前为离线入口 · 通过联机服务地址可邀请好友';return;}
+    if(document.querySelector('meta[name="tcxy-hosting"][content="pages"]')){
+      $('connectionHint').textContent=document.querySelector('meta[name="tcxy-online-url"]')?'同屏随时可玩 · 好友邀请请进入联机版':'同屏模式可用 · 联机入口尚未配置';
+      $('createRoomBtn').textContent='进入联机版';
+      if(new URL(location.href).searchParams.has('room'))explainOffline();return;
+    }
     try{
       serverInfo=await roomRequest('/api/info');onlineReady=serverInfo.online===true;
       $('connectionHint').textContent=serverInfo.shareScope==='lan'?'支持局域网邀请 · 需连接同一网络':serverInfo.shareScope==='local'?'当前服务仅本机可访问':'支持好友联机 · 通过邀请链接加入';

@@ -6,7 +6,8 @@
   "engines": { "node": ">=22" },
   "scripts": {
     "start": "node server.cjs",
-    "test": "node --test tests/core.test.cjs tests/rooms.test.cjs tests/http.test.cjs",
+    "test": "node --test tests/core.test.cjs tests/rooms.test.cjs tests/http.test.cjs tests/pages.test.cjs",
+    "build:pages": "node scripts/build-pages.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
     "test:online": "node tests/online-browser.cjs"
   }
