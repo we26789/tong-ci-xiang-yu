@@ -13,6 +13,11 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
 (async()=>{
   browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge',headless:true});
   const a=await browser.newContext({viewport:{width:1440,height:1050}}),b=await browser.newContext({viewport:{width:390,height:844}});
+  const serviceResponse=await a.request.get(new URL('/api/info',gameUrl).href);
+  assert.equal(serviceResponse.status(),200,'Verify the separate game service before any public writes');
+  const serviceInfo=await serviceResponse.json();
+  assert.equal(serviceInfo.online,true,'The target must identify itself as the game room service');
+  assert.equal(new URL(serviceInfo.baseUrl).origin,new URL(gameUrl).origin);
   host=await a.newPage();const guest=await b.newPage(),pages=await (await browser.newContext()).newPage();
   for(const page of [host,guest,pages])page.on('pageerror',error=>errors.push(error.message));
   await check('Published Pages plays a full same-screen game without requesting room APIs',async()=>{

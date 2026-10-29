@@ -3,8 +3,9 @@
 两个脑洞，一场奇妙相遇。支持**离线同屏**和**邀请码联机**的双人联想游戏。
 
 - [在线游玩（同屏版）](https://we26789.github.io/tong-ci-xiang-yu/)
-- [好友联机版](https://120.77.201.3/)
 - [GitHub 源码](https://github.com/we26789/tong-ci-xiang-yu)
+
+公网联机现已撤下。原服务器首页已恢复为原来的协作平台，不能将该首页作为游戏入口。本地和局域网联机功能仍可使用。
 
 ## 开始游玩
 
@@ -45,7 +46,7 @@ node server.cjs
 
 ### GitHub 与公网联机
 
-完整源码托管在 GitHub。推送 `main` 后，GitHub Actions 先执行游戏逻辑、房间隐私、HTTP 和静态构建测试，再发布 GitHub Pages 同屏版。Pages 的「邀请好友」会提示进入独立的联机版；网页不会向 Pages 请求不存在的房间接口。
+完整源码托管在 GitHub。推送 `main` 后，GitHub Actions 先执行游戏逻辑、房间隐私、HTTP 和静态构建测试，再发布 GitHub Pages 同屏版。当前未配置独立的公网联机地址，网页禁用公网邀请入口，不会跳转到其他项目，也不会向 Pages 请求不存在的房间接口。
 
 **GitHub Pages 只提供静态页面，不能运行 Node 房间服务。** 联机版将 `server.cjs` 和前端一起部署到支持 Node 的 HTTPS 服务，前端与接口保持同源。公网服务使用 `PUBLIC_URL`：
 
@@ -58,7 +59,7 @@ node server.cjs
 
 当前服务采用单进程内存房间；部署时应保持单实例，或先接入共享状态与分布式限速后再扩容。
 
-GitHub 仓库变量 `ONLINE_GAME_URL` 控制 Pages 的联机入口。修改后在 Actions 手动运行发布工作流即可生效。它应当是 HTTPS 根地址，不含账号、路径、参数或片段。构建只发布 `_site/index.html` 和 `.nojekyll`，服务端文件、本机记录、备份和环境配置不会进入静态网站。
+GitHub 仓库变量 `ONLINE_GAME_URL` 控制 Pages 的联机入口，目前已移除。只有为游戏配置独立地址并验证后才应设置；不能使用已有项目的首页。修改后在 Actions 手动运行发布工作流即可生效。它应当是 HTTPS 根地址，不含账号、路径、参数或片段。构建只发布 `_site/index.html` 和 `.nojekyll`，服务端文件、本机记录、备份和环境配置不会进入静态网站。
 
 服务器部署和回退说明见 [deploy/README.md](deploy/README.md)。
 
@@ -124,9 +125,9 @@ npm run test:online
 公网检查需要指定真实部署地址：
 
 ```powershell
-$env:PUBLIC_GAME_URL = 'https://120.77.201.3/'
+$env:PUBLIC_GAME_URL = 'https://已验证的独立游戏域名/'
 $env:PUBLIC_PAGES_URL = 'https://we26789.github.io/tong-ci-xiang-yu/'
 npm run test:public
 ```
 
-2026-10-29 验证：23 项 Node 测试、18 组同屏浏览器检查、13 组局域网检查和 5 组公网检查通过。公网检查实际访问 Pages 和 HTTPS 服务，以两个隔离浏览器会话验证邀请、加入、私密词隔离、刷新恢复、同步获胜与退出；另已通过 HTTPS 证书续签模拟。浏览器环境是 Windows Microsoft Edge，未以两台物理手机或其他浏览器验收。房间服务器只使用 Node 标准库，没有第三方运行依赖。
+开发阶段已通过 23 项 Node 测试、18 组同屏浏览器检查、13 组局域网检查和 5 组历史公网检查。随后按要求撤下公网联机，历史公网结果不代表当前仍有联机站点。浏览器环境是 Windows Microsoft Edge，未以两台物理手机或其他浏览器验收。房间服务器只使用 Node 标准库，没有第三方运行依赖。

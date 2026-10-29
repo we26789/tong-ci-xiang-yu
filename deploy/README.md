@@ -2,13 +2,19 @@
 
 联机服务与 GitHub Pages 分别发布。Pages 只运行同屏玩法，完整联机站点由 Node 提供页面和 `/api/`，两者必须保持同源，浏览器席位保存在 HttpOnly Cookie 中。
 
-## 当前运行方式
+## 当前状态
+
+公网游戏服务已停用并取消开机启动，GitHub 的 `ONLINE_GAME_URL` 已移除。原服务器的 HTTP 和 HTTPS 首页均恢复为协作平台。不得重新用已有项目的根地址部署游戏。以下为将来拥有独立游戏地址时的部署参考，并不表示当前服务仍在运行。
+
+原站 HTTPS 仍使用已签发的 IP 证书，续签定时器继续运行；证书及续签工具位于 `/opt/tong-ci-xiang-yu/ops/`，不能当作停用游戏的临时文件删除。
+
+## 独立地址部署参考
 
 - Node.js 24 独立运行时；不替换服务器其他项目的 Node。
 - 独立用户 `tongci`，应用目录 `/opt/tong-ci-xiang-yu/`。
 - `releases/<commit>/` 存放每次发布，`current` 符号链接指向启用版本。
 - systemd 单实例服务 `tong-ci-xiang-yu.service`，仅监听 `127.0.0.1:41731`。
-- 独立 Nginx HTTPS 虚拟主机反向代理，保留现有 HTTP 站点。
+- 使用独立游戏域名和明确匹配该域名的 Nginx 配置，同时验证原站 HTTP 和 HTTPS 首页、静态资源与接口未被改变。
 - `backups/` 在服务器保留首次发布前的 Nginx 配置。
 
 服务环境文件 `/etc/tong-ci-xiang-yu.env`：

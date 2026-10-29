@@ -2885,8 +2885,10 @@ body::before {
   async function bootRooms() {
     if(location.protocol==='file:'){$('connectionHint').textContent='当前为离线入口 · 通过联机服务地址可邀请好友';return;}
     if(document.querySelector('meta[name="tcxy-hosting"][content="pages"]')){
-      $('connectionHint').textContent=document.querySelector('meta[name="tcxy-online-url"]')?'同屏随时可玩 · 好友邀请请进入联机版':'同屏模式可用 · 联机入口尚未配置';
-      $('createRoomBtn').textContent='进入联机版';
+      var hasOnlineEntry=!!document.querySelector('meta[name="tcxy-online-url"]');
+      $('connectionHint').textContent=hasOnlineEntry?'同屏随时可玩 · 好友邀请请进入联机版':'同屏模式可用 · 公网联机暂未启用';
+      $('createRoomBtn').textContent=hasOnlineEntry?'进入联机版':'联机暂未启用';
+      ['createRoomBtn','joinRoomBtn','inviteBtn'].forEach(function(id){$(id).disabled=!hasOnlineEntry;});
       if(new URL(location.href).searchParams.has('room'))explainOffline();return;
     }
     try{
