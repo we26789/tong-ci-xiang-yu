@@ -2,6 +2,25 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const {createApp} = require('../server.cjs');
+const http = require('node:http');
+
+test('changing networks refreshes invitation URLs and host validation without losing rooms',async t=>{
+  let address='192.168.1.20';
+  const app=createApp({getNetworkAddresses:()=>[{name:'wifi',address}]});
+  await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));t.after(()=>app.close());
+  const port=app.server.address().port,base='http://127.0.0.1:'+port;
+  const created=await fetch(base+'/api/rooms',{method:'POST',headers:{Origin:base,'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({mode:'classic',theme:'free'})});
+  assert.equal(created.status,201);
+  const cookie=created.headers.get('set-cookie').split(';')[0],room=(await created.json()).room;
+  assert.match(room.shareUrl,/192\.168\.1\.20/);
+  address='192.168.43.173';
+  const session=await (await fetch(base+'/api/session',{headers:{Cookie:cookie}})).json();
+  assert.equal(session.room.code,room.code);assert.match(session.room.shareUrl,/192\.168\.43\.173/);
+  async function hostStatus(hostname){return new Promise((resolve,reject)=>{http.get(base+'/api/info',{headers:{Host:hostname+':'+port}},response=>{response.resume();response.on('end',()=>resolve(response.statusCode));}).on('error',reject);});}
+  assert.equal(await hostStatus(address),200);
+  assert.equal(await hostStatus('192.168.1.20'),403);
+  assert.equal(await hostStatus('attacker.invalid'),403);
+});
 
 test('HTTP room lifecycle, secure seats, idempotency, privacy and input protection',async t=>{
   const app=createApp();await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));

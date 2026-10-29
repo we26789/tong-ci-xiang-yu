@@ -16,15 +16,15 @@ function networkAddresses() {
     .map(item=>({name,address:item.address})))
     .sort((a,b)=>Number(/virtual|vethernet|docker|wsl/i.test(a.name))-Number(/virtual|vethernet|docker|wsl/i.test(b.name)));
 }
-function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomStore(), limit = 120} = {}) {
+function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomStore(), limit = 120, getNetworkAddresses = networkAddresses} = {}) {
   let published = null;
   if (publicUrl) {
     published = new URL(publicUrl);
     if (!['http:','https:'].includes(published.protocol)||published.username||published.password||published.search||published.hash||published.pathname!=='/') throw new Error('PUBLIC_URL must be a root HTTP(S) URL without credentials, query or fragment');
     if (published.protocol!=='https:'&&!localHostname(published.hostname)) throw new Error('Use HTTPS for a public PUBLIC_URL');
   }
-  const addresses=networkAddresses(), intents=new Map(), rates=new Map();
-  const allowedHosts=new Set(['127.0.0.1','localhost','[::1]',os.hostname().toLowerCase(),...addresses.map(item=>item.address)]);
+  const intents=new Map(), rates=new Map();
+  const allowedHosts=new Set(['127.0.0.1','localhost','[::1]',os.hostname().toLowerCase()]);
   if(published)allowedHosts.add(published.hostname.toLowerCase());
   let waiters=0;
   const waitsPerSeat=new Map();
@@ -42,11 +42,12 @@ function createApp({publicUrl = process.env.PUBLIC_URL || '', store = new RoomSt
   function json(res,status,body) { if(res.destroyed||res.writableEnded)return;res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(body)); }
   function requestUrl(req) {
     let url;try{url=new URL(req.url,'http://'+req.headers.host);}catch(_){throw new RoomError('INVALID_REQUEST','请求地址不正确。',400);}
-    if(!allowedHosts.has(url.hostname.toLowerCase()))throw new RoomError('INVALID_HOST','请使用服务提供的访问地址。',403);
+    if(!allowedHosts.has(url.hostname.toLowerCase())&&!getNetworkAddresses().some(item=>item.address===url.hostname))throw new RoomError('INVALID_HOST','请使用服务提供的访问地址。',403);
     return url;
   }
   function sharing(req) {
     const url=requestUrl(req),port=server.address().port;
+    const addresses=getNetworkAddresses();
     let base=published?.origin;
     if(!base)base=['127.0.0.1','localhost','[::1]'].includes(url.hostname)&&addresses.length?'http://'+addresses[0].address+':'+port:url.origin;
     const host=new URL(base).hostname;
