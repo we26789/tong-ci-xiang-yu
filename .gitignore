@@ -1,0 +1,13 @@
+.workbuddy/
+.backups/
+node_modules/
+test-results/
+artifacts/
+tasks/
+_site/
+*.pem
+*.key
+*.log
+.env
+.env.*
+!.env.example

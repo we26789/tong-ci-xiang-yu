@@ -1,0 +1,13 @@
+{
+  "name": "mind-meld",
+  "version": "2.1.0",
+  "private": true,
+  "description": "同词相遇：离线同屏与邀请码双人联想游戏",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.cjs",
+    "test": "node --test tests/core.test.cjs tests/rooms.test.cjs tests/http.test.cjs",
+    "test:browser": "node tests/browser-smoke.cjs",
+    "test:online": "node tests/online-browser.cjs"
+  }
+}
