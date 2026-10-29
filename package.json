@@ -10,6 +10,7 @@
     "build:pages": "node scripts/build-pages.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
     "test:focus": "node tests/focus-browser.cjs",
+    "test:ime": "node tests/ime-browser.cjs",
     "test:online": "node tests/online-browser.cjs",
     "test:public": "node tests/public-browser.cjs"
   }

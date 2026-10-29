@@ -54,7 +54,7 @@ async function screenshot(page, name) {
   await check('Standalone file opens without remote dependencies', async () => {
     await page.goto(url);
     assert.match(await page.title(), /同词相遇/);
-    assert.equal(await page.locator('#inA').getAttribute('type'), 'password');
+    assert.equal(await page.locator('#inA').getAttribute('type'), 'text');
     assert.equal(await page.locator('#go').isDisabled(), true);
     await screenshot(page, 'after-desktop');
   });

@@ -2466,6 +2466,23 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
 @media(prefers-reduced-motion:reduce){.preview-card{animation:none}
 }
 </style>
+<style id="private-word-styles">
+.private-input-wrap{position:relative;flex:1;min-width:0;font-size:15px}
+.input-row .private-input-wrap input{width:100%}
+.input-row input.private-word,.input-row input.private-word:disabled{color:transparent;-webkit-text-fill-color:transparent;caret-color:var(--green)}
+.input-row input.private-word::selection{color:transparent;-webkit-text-fill-color:transparent}
+.input-row input.private-word::placeholder{color:#92958c;-webkit-text-fill-color:#92958c;-webkit-text-security:none}
+.private-word-mask{position:absolute;left:0;top:50%;transform:translateY(-50%);max-width:100%;overflow:hidden;white-space:nowrap;pointer-events:none;color:#f1f2ed;letter-spacing:3px}
+body.native-word-mask .input-row input.private-word{color:#f1f2ed;-webkit-text-fill-color:currentColor;-webkit-text-security:disc}
+body.native-word-mask .private-word-mask{display:none}
+body[data-view="game"] .private-input-wrap{font-size:19px}
+@media(max-width:700px){body[data-view="game"] .private-input-wrap{font-size:16px}}
+.invitation-state{display:inline-flex;align-items:center;gap:9px;margin:0 0 14px;padding:7px 13px;border:1px solid #c5ed9f35;border-radius:30px;font-size:11px;color:var(--green);background:#c5ed9f08}
+.invitation-state::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px #c5ed9f0a;animation:invite-pulse 2s ease-in-out infinite}
+.waiting-room .invitation-state+p{margin:0}
+@keyframes invite-pulse{50%{opacity:.4;box-shadow:0 0 0 7px #c5ed9f00}}
+@media(prefers-reduced-motion:reduce){.invitation-state::before{animation:none}}
+</style>
 </head>
 <body data-view="home" data-connection="local">
 <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2516,7 +2533,7 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     <div class="workspace">
       <section class="game-panel" aria-label="双人联想游戏">
         <div class="panel-heading"><div class="room-title"><svg class="icon" aria-hidden="true"><use href="#i-orbit"/></svg>脑洞交汇处<small>THE MEETING SPACE</small></div><div class="room-actions"><span class="round-badge">ROUND <b id="roundNum">01</b></span><button class="icon-button" id="resetBtn" aria-label="重新开始本局" title="重新开始"><svg class="icon" aria-hidden="true"><use href="#i-reset"/></svg></button></div></div>
-        <div class="waiting-room" id="waitingRoom" hidden><div class="waiting-orbit" aria-hidden="true"><svg class="icon"><use href="#i-infinity"/></svg></div><p class="eyebrow">A LITTLE SPACE, JUST FOR TWO.</p><h2>留一个位置，等好友来。</h2><p>发送下面的邀请码或链接。好友确认加入后，就能开始。</p></div>
+        <div class="waiting-room" id="waitingRoom" hidden><div class="waiting-orbit" aria-hidden="true"><svg class="icon"><use href="#i-infinity"/></svg></div><p class="eyebrow">A LITTLE SPACE, JUST FOR TWO.</p><h2>等待对方接受邀请</h2><div class="invitation-state" role="status" id="invitationState">邀请已准备</div><p>把下面的邀请码或链接发给好友，等对方考虑并接受。<br>接受后，双方会直接进入游戏。</p></div>
         <div id="roomDock" hidden></div>
         <div class="arena" id="arena">
           <svg class="orbit-svg" viewBox="0 0 820 302" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="orbit-line"><stop stop-color="#edb289" stop-opacity=".05"/><stop offset=".3" stop-color="#edb289" stop-opacity=".3"/><stop offset=".7" stop-color="#bdafe6" stop-opacity=".3"/><stop offset="1" stop-color="#bdafe6" stop-opacity=".05"/></linearGradient><radialGradient id="floor-glow"><stop stop-color="#c5ed9f" stop-opacity=".04"/><stop offset="1" stop-color="#c5ed9f" stop-opacity="0"/></radialGradient></defs><ellipse cx="410" cy="215" rx="310" ry="62" fill="url(#floor-glow)"/><g fill="none" stroke="url(#orbit-line)" stroke-width=".8"><ellipse cx="410" cy="187" rx="288" ry="65" transform="rotate(-12 410 187)"/><ellipse cx="410" cy="169" rx="270" ry="82" transform="rotate(13 410 169)" stroke-dasharray="3 7"/><ellipse cx="410" cy="210" rx="237" ry="35"/><ellipse cx="410" cy="210" rx="170" ry="25"/><path d="M142 200q268 70 536 0M215 224l-31 19m165-11-7 25m126-25 7 25m126-33 31 19"/></g><circle cx="145" cy="171" r="2.5" fill="#c5ed9f" opacity=".6"/><circle cx="668" cy="150" r="2" fill="#bdafe6" opacity=".6"/><path d="m605 53 2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="none" stroke="#bdafe6" opacity=".4"/></svg>
@@ -2532,8 +2549,8 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
         <div class="game-controls">
           <div id="playControls"><div class="round-heading"><span class="round-copy" id="roundCopy">第 <b>01</b> 轮 · 从任意一个词开始</span><span class="privacy-note" id="privacyNote"><svg class="icon" aria-hidden="true"><use href="#i-private"/></svg>词语已隐藏，放心输入</span><span class="timer-badge" id="timerBadge" hidden><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span id="timerText">30s</span></span></div><div class="timer-track" id="timerTrack" hidden><div class="timer-bar" id="timerBar"></div></div>
             <div class="players">
-              <div class="player-box a" id="playerA"><div class="player-header"><label class="player-name" for="inA"><span class="player-letter">A</span>玩家 A</label><span class="player-status" id="statusA">正在想词</span></div><div class="input-row"><input id="inA" type="password" maxlength="10" placeholder="悄悄写下你的词" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hint" data-1p-ignore data-lpignore="true"><button class="lock-button" id="lockA" aria-label="锁定玩家 A 的词"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span>锁定</span></button></div><div class="player-foot"><span class="privacy-label">只有揭晓时才看得见</span><span class="character-count" id="countA">0 / 10</span></div></div>
-              <div class="player-box b" id="playerB"><div class="player-header"><label class="player-name" for="inB"><span class="player-letter">B</span>玩家 B</label><span class="player-status" id="statusB">正在想词</span></div><div class="input-row"><input id="inB" type="password" maxlength="10" placeholder="悄悄写下你的词" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hint" data-1p-ignore data-lpignore="true"><button class="lock-button" id="lockB" aria-label="锁定玩家 B 的词"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span>锁定</span></button></div><div class="player-foot"><span class="privacy-label">只有揭晓时才看得见</span><span class="character-count" id="countB">0 / 10</span></div></div>
+              <div class="player-box a" id="playerA"><div class="player-header"><label class="player-name" for="inA"><span class="player-letter">A</span>玩家 A</label><span class="player-status" id="statusA">正在想词</span></div><div class="input-row"><span class="private-input-wrap"><input id="inA" class="private-word" type="text" inputmode="text" placeholder="悄悄写下你的词" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hint" data-1p-ignore data-lpignore="true"><span class="private-word-mask" id="maskA" aria-hidden="true"></span></span><button class="lock-button" id="lockA" aria-label="锁定玩家 A 的词"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span>锁定</span></button></div><div class="player-foot"><span class="privacy-label">只有揭晓时才看得见</span><span class="character-count" id="countA">0 / 10</span></div></div>
+              <div class="player-box b" id="playerB"><div class="player-header"><label class="player-name" for="inB"><span class="player-letter">B</span>玩家 B</label><span class="player-status" id="statusB">正在想词</span></div><div class="input-row"><span class="private-input-wrap"><input id="inB" class="private-word" type="text" inputmode="text" placeholder="悄悄写下你的词" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="hint" data-1p-ignore data-lpignore="true"><span class="private-word-mask" id="maskB" aria-hidden="true"></span></span><button class="lock-button" id="lockB" aria-label="锁定玩家 B 的词"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span>锁定</span></button></div><div class="player-foot"><span class="privacy-label">只有揭晓时才看得见</span><span class="character-count" id="countB">0 / 10</span></div></div>
             </div>
             <button class="primary reveal-button" id="go" disabled><span id="goLabel">同时揭晓</span><span class="keycap" aria-hidden="true">↵</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button><p class="game-hint" id="hint" role="status">各写一个词，锁定后，一起揭晓。<span aria-hidden="true"> ✧</span></p>
           </div>
@@ -2717,6 +2734,9 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
   var restored = core.restore(read(keys.session, null));
   var game = restored || core.createGame(records[0] || {});
   var inputs = [$('inA'), $('inB')], boxes = [$('playerA'), $('playerB')], lockButtons = [$('lockA'), $('lockB')];
+  var composing=[false,false],compositionRound=['',''],invitedCode='';
+  try{invitedCode=sessionStorage.getItem('tcxy.invited')||'';}catch(_){}
+  document.body.classList.toggle('native-word-mask',!!(window.CSS&&CSS.supports('-webkit-text-security','disc')));
   var soundOn = read(keys.sound, false) === true, audio = null, revealTimeout = null, toastTimeout = null, hintTimeout = null, modalCallback = null, modalReturnFocus = null;
   var historyOpen = false, inspirationIndex = 0, lastRecord = null;
   var onlineRoom=null,onlineReady=false,onlineConnected=false,networkBusy=false,serverInfo=null;
@@ -2733,7 +2753,7 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     $('roomDock').hidden=!playing||!onlineRoom;$('waitingRoom').hidden=!waiting;
     $('startLocalBtn').firstChild.textContent=hasProgress()?'继续同屏对局':'开始同屏游戏';
     $('focusSession').textContent=(onlineRoom?'好友联机 · 玩家 '+(onlineRoom.seat===0?'A':'B'):'同屏双人')+' · '+(game.mode==='timed'?'限时心跳':'自由漫游')+' · '+themes[game.theme].label.split(' · ')[0];
-    $('focusTitle').textContent=waiting?'房间已准备好，等好友加入。':game.phase==='done'?'这一次，你们心有灵犀。':game.phase==='countdown'?'让两个答案，同时亮相。':game.phase==='next'?'连接这两个词，再靠近一步。':game.phase==='timeout'?'换个灵感，下一轮继续。':ready===2?'准备好了，一起揭晓。':ready===1?'一个脑洞已就绪，等待另一个答案。':game.round===1?'各想一个词，让脑洞出发。':'看着上一轮的词，找到它们的联系。';
+    $('focusTitle').textContent=waiting?(invitedCode===onlineRoom.code?'已邀请，等待对方接受。':'邀请已就绪，等待好友接受。'):game.phase==='done'?'这一次，你们心有灵犀。':game.phase==='countdown'?'让两个答案，同时亮相。':game.phase==='next'?'连接这两个词，再靠近一步。':game.phase==='timeout'?'换个灵感，下一轮继续。':ready===2?'准备好了，一起揭晓。':ready===1?'一个脑洞已就绪，等待另一个答案。':game.round===1?'各想一个词，让脑洞出发。':'看着上一轮的词，找到它们的联系。';
     var step=game.phase==='input'?(ready===2?2:ready?1:0):2;
     $('playProgress').querySelectorAll('li').forEach(function(item,i){item.classList.toggle('is-active',i===step&&game.phase!=='done');item.classList.toggle('is-complete',i<step||game.phase==='done');if(i===step)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current');});
   }
@@ -2806,6 +2826,22 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     $('arenaEnglish').textContent = latest ? 'DIFFERENT STARTS. A SHARED DESTINATION.' : 'A LITTLE CLOSER, ONE WORD AT A TIME.';
     if (game.phase === 'done') { $('meetWord').textContent = latest.a; $('meetTone').textContent = toneOf(game.round); }
   }
+  function renderPrivateWord(side) {
+    $('mask'+(side===0?'A':'B')).textContent='•'.repeat(Math.min(40,Array.from(inputs[side].value).length));
+  }
+  function startWordTimer() { if(onlineRoom)onlineTimerStart();else core.startTimer(game,Date.now()); }
+  function readWordInput(side,event) {
+    if(checkDeadline())return;
+    if(game.phase!=='input'||game.locked[side]||(onlineRoom&&(side!==onlineRoom.seat||onlineRoom.status!=='playing'))){renderControls();return;}
+    startWordTimer();
+    // The browser owns preedit text until compositionend; room updates must leave it alone.
+    if(composing[side]||(event&&event.isComposing)){
+      renderPrivateWord(side);$(side===0?'countA':'countB').textContent='选字中…';return;
+    }
+    var chars=Array.from(inputs[side].value),truncated=chars.length>10,value=chars.slice(0,10).join('');
+    try{core.setWord(game,side,value);if(inputs[side].value!==value)inputs[side].value=value;renderControls();if(truncated)warn('最多 10 个字，已保留前 10 个字。');}
+    catch(error){warn(error.message);}
+  }
   function renderTimer() {
     var timed = game.mode === 'timed', seconds = Math.ceil(game.remainingMs / 1000), urgent = seconds <= 10;
     $('timerBadge').hidden = !timed;
@@ -2824,15 +2860,17 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     $('roundCopy').replaceChildren(document.createTextNode('第 '),el('b','',String(game.round).padStart(2,'0')),document.createTextNode(' 轮 · ' + (phase === 'next' ? '本轮已揭晓，继续连接灵感' : phase === 'timeout' ? '时间到，下一轮继续' : phase === 'countdown' ? '两个脑洞，即将同时揭晓' : game.round === 1 ? '从任意一个词开始' : '找到连接它们的下一个词')));
     inputs.forEach(function (input,i) {
       var locked = game.locked[i];
+      if(compositionRound[i]!==game.id+':'+game.round||!inputPhase||locked)composing[i]=false;
       input.disabled = !inputPhase || locked;
-      if (input.value !== game.words[i]) input.value = game.words[i];
+      if (!composing[i]&&input.value !== game.words[i]) input.value = game.words[i];
+      renderPrivateWord(i);
       boxes[i].classList.toggle('locked',locked);
       lockButtons[i].disabled = !inputPhase;
       lockButtons[i].querySelector('span').textContent = locked ? '解锁' : '锁定';
       lockButtons[i].querySelector('use').setAttribute('href',locked ? '#i-check' : '#i-lock');
       lockButtons[i].setAttribute('aria-label',(locked ? '解锁' : '锁定') + '玩家 ' + (i === 0 ? 'A' : 'B') + ' 的词');
       $(i === 0 ? 'statusA' : 'statusB').textContent = locked ? '已锁定 ✓' : inputPhase ? '正在想词' : '本轮结束';
-      $(i === 0 ? 'countA' : 'countB').textContent = Array.from(game.words[i]).length + ' / 10';
+      $(i === 0 ? 'countA' : 'countB').textContent = composing[i]?'选字中…':Array.from(game.words[i]).length + ' / 10';
     });
     $('go').disabled = phase === 'countdown' || (inputPhase && ready < 2);
     $('goLabel').textContent = phase === 'next' || phase === 'timeout' ? '下一轮，继续靠近' : phase === 'countdown' ? '脑电波对接中…' : '同时揭晓';
@@ -2851,6 +2889,7 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
   function warn(message) { $('hint').textContent = message; $('hint').classList.add('warn'); clearTimeout(hintTimeout); hintTimeout = setTimeout(function () { $('hint').classList.remove('warn'); },3000); }
   function checkDeadline() { if(onlineRoom)return false; if (core.tick(game,Date.now())) { clearTimeout(revealTimeout); render(); saveSession(); announce('这一轮时间到，未揭晓的词已清空，可以开始下一轮。'); playSound('tick'); return true; } return false; }
   function lock(side) {
+    if(composing[side]){warn('先选好中文词语，再锁定。');return;}
     if(onlineRoom){if(side===onlineRoom.seat)onlineAction(game.locked[side]?'unlock':'lock',{word:inputs[side].value});return;}
     if (checkDeadline()) return;
     try { core.toggleLock(game,side); if (game.locked[side]) { core.startTimer(game,Date.now()); playSound('lock'); } renderControls(); saveSession(); announce('玩家 ' + (side === 0 ? 'A' : 'B') + (game.locked[side] ? ' 已锁定词语' : ' 已解锁词语')); if (game.locked.every(Boolean)) $('go').focus({preventScroll:true}); else if (!game.locked[side]) inputs[side].focus({preventScroll:true}); }
@@ -2894,6 +2933,7 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
   function localDateKey() { var date=new Date(); return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0'); }
   function dailyInspiration() { var all=[]; Object.keys(themes).forEach(function (key) { if(key!=='free') themes[key].pairs.forEach(function (pair) { all.push({theme:key,pair:pair}); }); }); var daily=all[core.dailyIndex(localDateKey(),all.length)]; $('inspireA').textContent=daily.pair[0]; $('inspireB').textContent=daily.pair[1]; $('inspireCaption').textContent='今日 '+localDateKey().slice(5).replace('-',' / ')+' · '+themes[daily.theme].label.split(' · ')[0]; toast('今日灵感已送达，愿脑洞在这里相遇。'); }
   function openDialog(title,content,actions) {
+    $('modal').dataset.kind='';
     if (!$('modal').open) modalReturnFocus=document.activeElement;
     $('modalTitle').textContent=title; $('modalBody').replaceChildren(); $('modalActions').replaceChildren(); modalCallback=null;
     content($('modalBody'));
@@ -2987,7 +3027,8 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     inputs.forEach(function(input,i){
       var own=i===room.seat,player=room.players[i],locked=player.locked;
       if(!own){input.value='';input.disabled=true;input.placeholder=locked?'好友的词已保密':'好友在自己的屏幕输入';lockButtons[i].disabled=true;lockButtons[i].querySelector('span').textContent=locked?'已锁定':'等待好友';}
-      else input.disabled=room.status!=='playing'||game.phase!=='input'||locked||networkBusy||!onlineConnected;
+      else input.disabled=room.status!=='playing'||game.phase!=='input'||locked||!onlineConnected;
+      renderPrivateWord(i);
       if(own)lockButtons[i].disabled=room.status!=='playing'||game.phase!=='input'||networkBusy||!onlineConnected;
       $(i===0?'statusA':'statusB').textContent=!player.joined?'等待加入':!player.connected?'暂时离线':locked?'已锁定 ✓':room.status==='waiting'?'等待好友':game.phase==='input'?(own?'你的脑洞':'好友想词中'):'本轮结束';
     });
@@ -3000,6 +3041,10 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     $('againBtn').disabled=networkBusy||!onlineConnected||own.rematchReady;
     $('againBtn').firstChild.textContent=own.rematchReady?'已准备，等待好友再来一局':room.players[1-room.seat].rematchReady?'好友已准备，一起再来一局':'和好友再来一局';
     if(room.status==='waiting')$('arenaCaption').textContent='邀请码已就绪，等另一颗脑洞赴约。';
+    if(room.status==='waiting'){
+      var invited=invitedCode===room.code;
+      $('invitationState').textContent=invited?'已邀请 · 等待对方接受':'邀请已准备 · 等待回应';
+    }
     $('countdown').hidden=game.phase!=='countdown';
   }
   function applyRoom(room) {
@@ -3019,6 +3064,10 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     if(game.phase==='done'&&(!previous||previous.game.id!==game.id||previous.game.phase!=='done'||!lastRecord))completeGame(game.history.at(-1));
     else{render();if(previous&&previous.game.phase==='countdown'&&game.phase==='next')playSound('reveal');}
     onlineClock();
+    if(previous&&previous.status==='waiting'&&room.status==='playing'){
+      if($('modal').open&&$('modal').dataset.kind==='invitation')$('modal').close();
+      toast('好友已接受邀请，游戏开始！');announce('好友已接受邀请，双方直接开始游戏。');
+    }
   }
   function onlineClock() {
     if(!onlineRoom)return;
@@ -3094,12 +3143,12 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     if(!onlineReady){explainOffline();return;}
     if(onlineRoom){if(!code||code===onlineRoom.code){showInvite();return;}openDialog('你已经在另一个房间',function(body){body.append(el('p','','你目前在房间 '+onlineRoom.code+'。请先退出当前房间，再加入新的邀请。'));},[{label:'返回当前房间',kind:'primary'}]);return;}
     openDialog('加入好友的脑洞',function(body){
-      body.append(el('p','','输入邀请码，或者粘贴好友发来的房间链接。确认后才会占据玩家 B 的席位。'));
+      body.append(el('p','','好友邀请你一起玩「同词相遇」。输入邀请码或粘贴分享链接，接受邀请后双方直接开始游戏。'));
       var label=el('label','join-label','邀请码 / 分享链接');label.htmlFor='joinCode';var input=el('input','join-input');input.id='joinCode';input.placeholder='例如 7K9R5M';input.maxLength=512;input.autocomplete='off';input.spellcheck=false;input.value=code||'';var error=el('p','join-error','');error.id='joinError';error.setAttribute('role','status');
       body.append(label,input,error,el('p','dialog-note','局域网邀请需要连接同一网络。已满员、已结束或过期的房间无法再加入。'));
       input.addEventListener('keydown',function(event){if(event.key==='Enter'&&!event.isComposing){event.preventDefault();joinFromDialog();}});
     },[]);
-    var cancel=el('button','secondary','暂时不加入'),join=el('button','primary','确认加入');join.id='confirmJoinBtn';cancel.addEventListener('click',function(){$('modal').close();});join.addEventListener('click',joinFromDialog);$('modalActions').append(cancel,join);
+    var cancel=el('button','secondary','稍后再说'),join=el('button','primary','接受邀请，开始游戏');join.id='confirmJoinBtn';cancel.addEventListener('click',function(){$('modal').close();});join.addEventListener('click',joinFromDialog);$('modalActions').append(cancel,join);
     setTimeout(function(){$('joinCode').focus();},30);
   }
   async function joinFromDialog() {
@@ -3109,28 +3158,39 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
     networkBusy=true;$('confirmJoinBtn').disabled=true;$('confirmJoinBtn').textContent='正在加入…';$('joinError').textContent='';
     try{var data=await roomRequest('/api/rooms/'+code+'/members',{body:{}});$('modal').close();beginRoom(data.room);joinDiscardConfirmed=false;toast('已加入好友的房间，你是玩家 B。');}
     catch(error){if($('joinError'))$('joinError').textContent=error.message;if(error.code==='ALREADY_IN_ROOM'){var session=await roomRequest('/api/session');if(session.room){$('modal').close();beginRoom(session.room);}}}
-    finally{networkBusy=false;if($('confirmJoinBtn')){$('confirmJoinBtn').disabled=false;$('confirmJoinBtn').textContent='确认加入';}renderOnlineControls();}
+    finally{networkBusy=false;if($('confirmJoinBtn')){$('confirmJoinBtn').disabled=false;$('confirmJoinBtn').textContent='接受邀请，开始游戏';}renderOnlineControls();}
+  }
+  function markInvited(code) {
+    if(!onlineRoom||onlineRoom.code!==code||onlineRoom.status!=='waiting')return;
+    invitedCode=onlineRoom.code;
+    try{sessionStorage.setItem('tcxy.invited',onlineRoom.code);}catch(_){}
+    $('invitationState').textContent='已邀请 · 等待对方接受';$('focusTitle').textContent='已邀请，等待对方接受。';
+    if($('inviteDialogState')){$('inviteDialogState').textContent='已邀请 · 等待对方接受';$('modalTitle').textContent='已邀请，等待对方接受';}
+    announce('已邀请，等待对方接受后将自动开始。');
   }
   async function copyInvite(text,label) {
-    try{if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error();await navigator.clipboard.writeText(text);toast(label+'已复制。');}
-    catch(_){openDialog('复制'+label,function(body){body.append(el('p','','浏览器未开放直接复制，请选中下方内容后复制。'));var area=el('textarea','share-fallback');area.value=text;area.readOnly=true;area.setAttribute('aria-label',label);body.append(area);setTimeout(function(){area.focus();area.select();},40);});}
+    var code=onlineRoom&&onlineRoom.code;
+    try{if(!navigator.clipboard||!navigator.clipboard.writeText)throw new Error();await navigator.clipboard.writeText(text);markInvited(code);toast(label+'已复制，发给好友后等待对方接受。');}
+    catch(_){openDialog('复制'+label,function(body){body.append(el('p','','浏览器未开放直接复制，请选中下方内容后复制。'));var area=el('textarea','share-fallback');area.value=text;area.readOnly=true;area.setAttribute('aria-label',label);area.addEventListener('copy',function(){markInvited(code);});body.append(area);setTimeout(function(){area.focus();area.select();},40);});$('modal').dataset.kind='invitation';}
   }
-  function invitationText(room) { return '来和我玩「同词相遇」吧！\n邀请码：'+room.code+'\n'+room.shareUrl+'\n'+(room.shareScope==='lan'?'连接同一网络，打开链接后点「确认加入」。':'打开链接，确认加入，一起找到同一个词。'); }
+  function invitationText(room) { return '来和我玩「同词相遇」吧！\n邀请码：'+room.code+'\n'+room.shareUrl+'\n'+(room.shareScope==='lan'?'连接同一网络，打开链接后点「接受邀请，开始游戏」。':'打开链接，接受邀请就能开始，一起找到同一个词。'); }
   async function shareInvitation() {
     if(!onlineRoom){newRoom();return;}
     var room=onlineRoom;
-    if(navigator.share){try{await navigator.share({title:'同词相遇 · 好友邀请',text:'邀请码：'+room.code+'。'+roomScopeText(room),url:room.shareUrl});return;}catch(error){if(error.name==='AbortError')return;}}
+    if(navigator.share){try{await navigator.share({title:'同词相遇 · 好友邀请',text:'邀请码：'+room.code+'。'+roomScopeText(room),url:room.shareUrl});markInvited(room.code);return;}catch(error){if(error.name==='AbortError')return;}}
     await copyInvite(invitationText(room),'邀请文案');
   }
   function showInvite() {
     if(!onlineRoom){newRoom();return;}var room=onlineRoom;
     openDialog('留一个脑洞，等好友来',function(body){
+      var state=el('div','invitation-state',invitedCode===room.code?'已邀请 · 等待对方接受':'邀请已准备 · 分享给好友');state.id='inviteDialogState';state.setAttribute('role','status');body.append(state);
       body.append(el('p','','分享邀请码或链接，好友确认后就能加入你的房间。'));
       body.append(el('div','share-code-large',room.code));
       var label=el('label','invite-link-label','房间分享链接');label.htmlFor='inviteDialogLink';var input=el('input','room-share-link');input.id='inviteDialogLink';input.readOnly=true;input.value=room.shareUrl;
       var actions=el('div','invite-dialog-actions');[['复制邀请码',function(){copyInvite(room.code,'邀请码');}],['复制链接',function(){copyInvite(room.shareUrl,'分享链接');}]].forEach(function(item){var button=el('button','secondary',item[0]);button.addEventListener('click',item[1]);actions.append(button);});
       body.append(label,input,actions,el('p','dialog-note',roomScopeText(room)+' 房间创建后两小时内有效，退出房间后邀请也会结束。'));
     },[{label:'关闭，等待好友',kind:'secondary'},{label:'分享邀请',kind:'primary',action:shareInvitation}]);
+    $('modal').dataset.kind='invitation';
   }
   async function bootRooms() {
     if(location.protocol==='file:'){
@@ -3163,7 +3223,14 @@ body[data-view="game"]:not(.waiting-for-friend) #roomDock .room-leave{width:100%
   $('copyLinkBtn').addEventListener('click',function(){if(onlineRoom)copyInvite(onlineRoom.shareUrl,'分享链接');});
   $('shareRoomBtn').addEventListener('click',shareInvitation);$('leaveRoomBtn').addEventListener('click',leaveRoom);
 
-  inputs.forEach(function(input,i){input.addEventListener('input',function(){if(checkDeadline())return;try{core.setWord(game,i,input.value);if(onlineRoom)onlineTimerStart();else core.startTimer(game,Date.now());renderControls();}catch(error){warn(error.message);}});input.addEventListener('keydown',function(event){if(event.key!=='Enter'||event.isComposing||event.keyCode===229)return;event.preventDefault();if(game.phase==='input'&&!game.locked[i])lock(i);});lockButtons[i].addEventListener('click',function(){lock(i);});});
+  inputs.forEach(function(input,i){
+    input.addEventListener('compositionstart',function(){if(checkDeadline()||game.phase!=='input'||game.locked[i])return;composing[i]=true;compositionRound[i]=game.id+':'+game.round;startWordTimer();});
+    input.addEventListener('compositionend',function(){var current=compositionRound[i]===game.id+':'+game.round;composing[i]=false;if(current)readWordInput(i);else renderControls();});
+    input.addEventListener('input',function(event){readWordInput(i,event);});
+    input.addEventListener('keydown',function(event){if(event.key!=='Enter'||composing[i]||event.isComposing||event.keyCode===229)return;event.preventDefault();if(game.phase==='input'&&!game.locked[i])lock(i);});
+    ['copy','cut'].forEach(function(type){input.addEventListener(type,function(event){event.preventDefault();});});
+    lockButtons[i].addEventListener('click',function(){lock(i);});
+  });
   $('go').addEventListener('click',reveal);
   document.addEventListener('keydown',function(event){if(event.key==='Enter'&&!event.isComposing&&event.keyCode!==229&&!$('modal').open&&document.activeElement===document.body&&game.phase==='input'&&game.locked.every(Boolean)){event.preventDefault();reveal();}});
   $('resetBtn').addEventListener('click',function(){if(onlineRoom)leaveRoom();else confirmChange(function(){startGame();});});

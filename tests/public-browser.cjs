@@ -46,11 +46,16 @@ async function until(page,fn){await page.waitForFunction(fn,null,{timeout:20000}
     await host.locator('#createRoomBtn').click();await host.locator('#inviteDialogLink').waitFor();
     code=await host.locator('#roomCode').innerText();const link=await host.locator('#inviteDialogLink').inputValue();
     assert.equal(new URL(link).origin,new URL(gameUrl).origin);assert.equal(new URL(link).protocol,'https:');assert.equal(new URL(link).pathname,new URL(gameUrl).pathname);
-    await host.locator('#closeModal').click();await guest.goto(link);await guest.locator('#confirmJoinBtn').click();
+    await host.locator('#modalBody').getByRole('button',{name:'复制链接',exact:true}).click();
+    await guest.goto(link);assert.match(await guest.locator('#confirmJoinBtn').innerText(),/接受邀请.*开始游戏/);await guest.locator('#confirmJoinBtn').click();
     await until(guest,()=>!document.querySelector('#inB').disabled);await until(host,()=>!document.querySelector('#inA').disabled);
+    await until(host,()=>!document.querySelector('#modal').open);
     assert.equal(await host.locator('#landingView').isVisible(),false);assert.equal(await guest.locator('.sidebar').isVisible(),false);
     const cookie=(await a.cookies()).find(item=>item.name==='tcxy_session');assert.ok(cookie.secure&&cookie.httpOnly);assert.equal(cookie.sameSite,'Strict');assert.equal(cookie.path,new URL(gameUrl).pathname);
-    await host.locator('#inA').fill('公网星雾');await host.locator('#lockA').click();
+    assert.equal(await host.locator('#inA').getAttribute('type'),'text');await host.locator('#inA').focus();
+    const ime=await a.newCDPSession(host);await ime.send('Input.imeSetComposition',{text:'gongwangxingwu',selectionStart:14,selectionEnd:14});
+    assert.equal(await host.locator('#inA').inputValue(),'gongwangxingwu');await ime.send('Input.insertText',{text:'公网星雾'});await ime.detach();
+    await host.locator('#lockA').click();
     await until(guest,()=>document.querySelector('#statusA').textContent.includes('已锁定'));
     const state=await b.request.get(apiUrl('/api/rooms/'+code));assert.equal(state.status(),200);assert.ok(!(await state.text()).includes('公网星雾'));
   });
