@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew the HTTPS certificate for Tong Ci Xiang Yu
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/tong-ci-xiang-yu/ops/certbot/bin/certbot renew --quiet --config-dir /opt/tong-ci-xiang-yu/ops/letsencrypt --work-dir /opt/tong-ci-xiang-yu/ops/acme-work --logs-dir /opt/tong-ci-xiang-yu/ops/acme-logs --deploy-hook "/usr/bin/nginx -t && /usr/bin/nginx -s reload"
+PrivateTmp=true
+NoNewPrivileges=true
