@@ -1,8 +1,8 @@
 {
   "name": "mind-meld",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "同词相遇：离线同屏与邀请码双人联想游戏",
+  "description": "同词相遇：邀请好友，从两个词出发走向同一个答案的双人联机游戏",
   "engines": { "node": ">=22" },
   "scripts": {
     "start": "node server.cjs",

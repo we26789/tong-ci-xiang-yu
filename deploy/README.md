@@ -1,6 +1,6 @@
 # 联机服务部署
 
-联机服务与 GitHub Pages 分别发布。Pages 只运行同屏玩法，完整联机站点由 Node 提供页面和 `/api/`，两者必须保持同源，浏览器席位保存在 HttpOnly Cookie 中。
+联机服务与 GitHub Pages 分别发布。所有正式入口默认联机；Pages 按仓库变量 `ONLINE_GAME_URL` 自动进入 HTTPS 游戏地址，并保留邀请参数。完整联机站点由 Node 提供页面和 `/api/`，两者必须保持同源，浏览器席位保存在 HttpOnly Cookie 中。
 
 ## 当前状态
 
